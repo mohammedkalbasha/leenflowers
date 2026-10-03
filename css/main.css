@@ -367,9 +367,9 @@ input:focus, textarea:focus, select:focus {
   height: 100%;
   border-radius: 28px;
   overflow: hidden;
-  background: var(--glass-bg);
+  background: radial-gradient(circle at 50% 42%, var(--glass-bg) 20%, var(--bg-secondary) 100%);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(12px);
 }
 
