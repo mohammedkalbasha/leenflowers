@@ -603,7 +603,7 @@ const CartManager = new CartStore();
  * with manual switch capability and theme responsiveness.
  */
 
-export const FLOWER_TYPES = [
+const FLOWER_TYPES = [
   { id: 'rose', name: 'الورد الجوري الملكي', icon: '🌹', desc: 'جوري طبيعي مخملي مع قطرات الندى' },
   { id: 'tulip', name: 'زهرة التوليب الفاخرة', icon: '🌷', desc: 'توليب هولندي أنيق بأوراق نضرة' },
   { id: 'lily', name: 'زهرة الليليوم واللوتس', icon: '🪷', desc: 'ليليوم متفتح مع أسدية ذهبية' },

@@ -1,36 +1,23 @@
 import fs from 'node:fs';
-import path from 'node:path';
 
 console.log('Compiling standalone bundles for Leen Flowers (Zero CORS / Full Native Compatibility)...');
 
+function cleanModule(code) {
+  return code
+    .replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, '')
+    .replace(/export\s+default\s+/g, '')
+    .replace(/export\s+(const|let|var|function|class)\s+/g, '$1 ')
+    .replace(/export\s*\{[\s\S]*?\};?/g, '');
+}
+
 // Read modules
-const storeConfigCode = fs.readFileSync('js/store-config.js', 'utf8')
-  .replace(/export const StoreConfig/g, 'const StoreConfig');
-
-const productsDataCode = fs.readFileSync('js/products-data.js', 'utf8')
-  .replace(/export const initialCategories/g, 'const initialCategories')
-  .replace(/export const initialProducts/g, 'const initialProducts')
-  .replace(/export function getProducts/g, 'function getProducts')
-  .replace(/export function getProductById/g, 'function getProductById')
-  .replace(/export function saveProducts/g, 'function saveProducts')
-  .replace(/export function resetDefaultProducts/g, 'function resetDefaultProducts');
-
-const socialFeedDataCode = fs.readFileSync('js/social-feed-data.js', 'utf8')
-  .replace(/export const instagramPosts/g, 'const instagramPosts')
-  .replace(/export const facebookPosts/g, 'const facebookPosts');
-
-const cartCode = fs.readFileSync('js/cart.js', 'utf8')
-  .replace(/import\s+.*?\s+from\s+['"].*?['"];?/g, '')
-  .replace(/export const CartManager/g, 'const CartManager');
-
-const threeSceneCode = fs.readFileSync('js/three-scene.js', 'utf8')
-  .replace(/export function initThreeFlowerScene/g, 'function initThreeFlowerScene');
-
-const appCode = fs.readFileSync('js/app.js', 'utf8')
-  .replace(/import\s+.*?\s+from\s+['"].*?['"];?/g, '');
-
-const dashboardCode = fs.readFileSync('js/dashboard.js', 'utf8')
-  .replace(/import\s+.*?\s+from\s+['"].*?['"];?/g, '');
+const storeConfigCode = cleanModule(fs.readFileSync('js/store-config.js', 'utf8'));
+const productsDataCode = cleanModule(fs.readFileSync('js/products-data.js', 'utf8'));
+const socialFeedDataCode = cleanModule(fs.readFileSync('js/social-feed-data.js', 'utf8'));
+const cartCode = cleanModule(fs.readFileSync('js/cart.js', 'utf8'));
+const threeSceneCode = cleanModule(fs.readFileSync('js/three-scene.js', 'utf8'));
+const appCode = cleanModule(fs.readFileSync('js/app.js', 'utf8'));
+const dashboardCode = cleanModule(fs.readFileSync('js/dashboard.js', 'utf8'));
 
 // Store bundle
 const storefrontBundle = `
