@@ -1,0 +1,151 @@
+/**
+ * Design Themes System for Leen Flowers (متجر لين للزهور)
+ * Defines 3 visual identities switchable via data-theme on <html> or <body>
+ */
+
+:root,
+[data-theme="blush"] {
+  --theme-id: "blush";
+  --theme-name: "روز جولد ووردي ناعم";
+  
+  /* Backgrounds */
+  --bg-primary: #fff9f9;
+  --bg-secondary: #fdf0f1;
+  --bg-surface: #ffffff;
+  --bg-hero: radial-gradient(circle at 50% 30%, #ffedf0 0%, #fff7f7 60%, #fff0f2 100%);
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(232, 139, 153, 0.22);
+  --glass-shadow: 0 10px 30px rgba(184, 98, 114, 0.08);
+  
+  /* Colors & Accents */
+  --primary: #c85a70;
+  --primary-hover: #b04359;
+  --primary-glow: rgba(200, 90, 112, 0.25);
+  
+  --secondary: #d4af37; /* Champagne Gold */
+  --secondary-hover: #b89628;
+  
+  --accent: #e88b99;
+  --accent-light: #fdedef;
+  
+  /* Text */
+  --text-main: #2b1b22;
+  --text-muted: #6e5760;
+  --text-light: #9e8790;
+  
+  /* Badges & Tags */
+  --badge-bg: #fff0f3;
+  --badge-color: #c85a70;
+  --badge-border: #f7ced6;
+  
+  /* 3D Scene Ambient colors */
+  --scene-ambient: 0xffe6eb;
+  --scene-flower: 0xd94b68;
+  --scene-gold: 0xd4af37;
+  
+  /* Card & Modal */
+  --card-bg: #ffffff;
+  --card-border: #f5e2e5;
+  --card-shadow: 0 12px 36px rgba(176, 67, 89, 0.08);
+  --modal-overlay: rgba(43, 27, 34, 0.55);
+}
+
+/* Theme 2: Botanical Lavender & Pure White (أبيض نقي ولافندر طبيعي) */
+[data-theme="lavender"] {
+  --theme-id: "lavender";
+  --theme-name: "أبيض نقي ولافندر نضر";
+  
+  /* Backgrounds */
+  --bg-primary: #fcfcfd;
+  --bg-secondary: #f4f3f9;
+  --bg-surface: #ffffff;
+  --bg-hero: radial-gradient(circle at 50% 30%, #ede8f7 0%, #f9f8fc 60%, #ece9f5 100%);
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(142, 124, 195, 0.2);
+  --glass-shadow: 0 10px 30px rgba(110, 90, 160, 0.07);
+  
+  /* Colors & Accents */
+  --primary: #755bb4;
+  --primary-hover: #60469e;
+  --primary-glow: rgba(117, 91, 180, 0.25);
+  
+  --secondary: #3b8465; /* Botanical Sage */
+  --secondary-hover: #2e684f;
+  
+  --accent: #9d88cc;
+  --accent-light: #f0ecfa;
+  
+  /* Text */
+  --text-main: #1f1b2e;
+  --text-muted: #5e5a70;
+  --text-light: #8e8a9f;
+  
+  /* Badges & Tags */
+  --badge-bg: #f2eefb;
+  --badge-color: #6a4fa8;
+  --badge-border: #ded5f3;
+  
+  /* 3D Scene Ambient colors */
+  --scene-ambient: 0xede8f7;
+  --scene-flower: 0x8a6fc5;
+  --scene-gold: 0x3b8465;
+  
+  /* Card & Modal */
+  --card-bg: #ffffff;
+  --card-border: #e9e4f5;
+  --card-shadow: 0 12px 36px rgba(100, 75, 150, 0.08);
+  --modal-overlay: rgba(31, 27, 46, 0.55);
+}
+
+/* Theme 3: Luxury Midnight & Gold (دارك مود ملكي فاخر) */
+[data-theme="midnight"] {
+  --theme-id: "midnight";
+  --theme-name: "دارك مود ملكي وذهبي";
+  
+  /* Backgrounds */
+  --bg-primary: #0b0e14;
+  --bg-secondary: #131722;
+  --bg-surface: #181d2a;
+  --bg-hero: radial-gradient(circle at 50% 30%, #1e1b2e 0%, #0d1017 65%, #080a0f 100%);
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(22, 27, 39, 0.85);
+  --glass-border: rgba(212, 175, 55, 0.25);
+  --glass-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+  
+  /* Colors & Accents */
+  --primary: #e5b85e; /* Radiant Luxury Gold */
+  --primary-hover: #f3c975;
+  --primary-glow: rgba(229, 184, 94, 0.35);
+  
+  --secondary: #ff5277; /* Crimson Rose pop */
+  --secondary-hover: #e03b5f;
+  
+  --accent: #cca04b;
+  --accent-light: #24221c;
+  
+  /* Text */
+  --text-main: #f5f6fa;
+  --text-muted: #a3abc0;
+  --text-light: #6c768e;
+  
+  /* Badges & Tags */
+  --badge-bg: #272013;
+  --badge-color: #ffd276;
+  --badge-border: #4d3e1d;
+  
+  /* 3D Scene Ambient colors */
+  --scene-ambient: 0x1b1c2b;
+  --scene-flower: 0xe53955;
+  --scene-gold: 0xf5c065;
+  
+  /* Card & Modal */
+  --card-bg: #141824;
+  --card-border: #262c3f;
+  --card-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+  --modal-overlay: rgba(4, 6, 10, 0.8);
+}
