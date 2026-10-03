@@ -180,6 +180,51 @@
     </div>
   </section>
 
+  <!-- Social Media Feeds Section (Instagram & Facebook Live) -->
+  <section class="social-feed-section" id="social-feed">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-pill">تابعونا على مواقع التواصل</span>
+        <h3 class="section-title">جديدنا على إنستغرام وفيسبوك</h3>
+        <p class="section-sub">لقطات وتنسيقات حية من باقاتنا اليومية وطلبات زبائننا الكرام 🌸</p>
+      </div>
+
+      <!-- Social Tabs -->
+      <div class="social-tabs">
+        <button type="button" class="social-tab-btn ig active" id="tab-btn-ig">
+          <span>📸</span> إنستغرام (@leen_flower11)
+        </button>
+        <button type="button" class="social-tab-btn fb" id="tab-btn-fb">
+          <span>📘</span> فيسبوك (Leen Flowers)
+        </button>
+      </div>
+
+      <!-- Instagram View -->
+      <div id="social-view-ig">
+        <div class="ig-feed-grid" id="ig-posts-grid">
+          <!-- Populated by app.js -->
+        </div>
+        <div class="social-cta-box">
+          <a href="https://www.instagram.com/leen_flower11" target="_blank" rel="noopener">
+            <span>متابعة حسابنا الرسمي على Instagram</span> 📸
+          </a>
+        </div>
+      </div>
+
+      <!-- Facebook View -->
+      <div id="social-view-fb" style="display: none;">
+        <div class="fb-feed-list" id="fb-posts-list">
+          <!-- Populated by app.js -->
+        </div>
+        <div class="social-cta-box">
+          <a href="https://www.facebook.com/p/Leen-Flowers-100090007161366/" target="_blank" rel="noopener">
+            <span>زيارة صفحتنا الرسمية على Facebook</span> 📘
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Cart Drawer -->
   <div class="cart-drawer-overlay" id="cart-drawer-overlay">
     <div class="cart-drawer">
@@ -208,6 +253,91 @@
         <button type="button" class="btn-proceed-checkout" id="proceed-checkout-btn">
           <span>متابعة لإتمام الطلب</span> 📝
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Details Modal (Quick View & Full Specs) -->
+  <div class="product-modal-overlay" id="product-details-modal-overlay">
+    <div class="product-modal">
+      <div class="checkout-modal-head">
+        <h3>🌸 <span>تفاصيل الباقة والتنسيق</span></h3>
+        <button type="button" class="btn-close-drawer" id="close-prod-modal-btn" aria-label="إغلاق">✕</button>
+      </div>
+
+      <div class="product-modal-body">
+        <!-- Gallery / Image -->
+        <div class="product-modal-gallery">
+          <img src="" alt="" id="modal-img" class="product-modal-img">
+        </div>
+
+        <!-- Info & Actions -->
+        <div class="product-modal-info">
+          <span class="modal-badge-tag" id="modal-badge"></span>
+          <h2 class="modal-product-title" id="modal-title"></h2>
+
+          <div class="modal-price-box">
+            <span class="modal-price-main" id="modal-price"></span>
+            <span class="modal-price-old" id="modal-old-price"></span>
+            <span class="modal-discount-tag">شامل بطاقة الإهداء مجاناً ✨</span>
+          </div>
+
+          <p class="modal-product-desc" id="modal-desc"></p>
+
+          <!-- Specifications Card -->
+          <div class="specs-card">
+            <div class="specs-row">
+              <span class="specs-label">نوع الزهور:</span>
+              <span class="specs-val" id="modal-spec-flower-type"></span>
+            </div>
+            <div class="specs-row">
+              <span class="specs-label">عدد الورود:</span>
+              <span class="specs-val" id="modal-spec-count"></span>
+            </div>
+            <div class="specs-row">
+              <span class="specs-label">الأبعاد التقريبية:</span>
+              <span class="specs-val" id="modal-spec-dimensions"></span>
+            </div>
+            <div class="specs-row">
+              <span class="specs-label">طريقة التغليف:</span>
+              <span class="specs-val" id="modal-spec-packaging"></span>
+            </div>
+            <div class="specs-row">
+              <span class="specs-label">متوسط النضارة:</span>
+              <span class="specs-val" id="modal-spec-freshness"></span>
+            </div>
+          </div>
+
+          <!-- Flower Care Box -->
+          <div class="care-box">
+            <div class="care-icon">💡</div>
+            <div class="care-text">
+              <h6>إرشادات العناية بالباقة:</h6>
+              <p id="modal-care-desc"></p>
+            </div>
+          </div>
+
+          <!-- Actions & Quantity -->
+          <div class="modal-actions-bar">
+            <div class="modal-qty-row">
+              <span style="font-weight:700; font-size:0.9rem;">الكمية:</span>
+              <div class="modal-qty-ctrl">
+                <button type="button" id="modal-qty-decrease">-</button>
+                <span id="modal-qty-val">1</span>
+                <button type="button" id="modal-qty-increase">+</button>
+              </div>
+            </div>
+
+            <div class="modal-buttons-grid">
+              <button type="button" class="btn-modal-cart" id="modal-btn-add-cart">
+                <span>إضافة إلى السلة</span> 🛒
+              </button>
+              <button type="button" class="btn-modal-wa" id="modal-btn-direct-wa">
+                <span>طلب مباشر بالواتساب</span> 💬
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

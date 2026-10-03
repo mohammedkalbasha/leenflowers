@@ -15,6 +15,10 @@ const productsDataCode = fs.readFileSync('js/products-data.js', 'utf8')
   .replace(/export function saveProducts/g, 'function saveProducts')
   .replace(/export function resetDefaultProducts/g, 'function resetDefaultProducts');
 
+const socialFeedDataCode = fs.readFileSync('js/social-feed-data.js', 'utf8')
+  .replace(/export const instagramPosts/g, 'const instagramPosts')
+  .replace(/export const facebookPosts/g, 'const facebookPosts');
+
 const cartCode = fs.readFileSync('js/cart.js', 'utf8')
   .replace(/import\s+.*?\s+from\s+['"].*?['"];?/g, '')
   .replace(/export const CartManager/g, 'const CartManager');
@@ -40,6 +44,8 @@ const storefrontBundle = `
   ${storeConfigCode}
 
   ${productsDataCode}
+
+  ${socialFeedDataCode}
 
   ${cartCode}
 

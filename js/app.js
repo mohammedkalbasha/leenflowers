@@ -4,6 +4,7 @@
 
 import { StoreConfig } from './store-config.js';
 import { initialCategories, getProducts, getProductById } from './products-data.js';
+import { instagramPosts, facebookPosts } from './social-feed-data.js';
 import { CartManager } from './cart.js';
 import { initThreeFlowerScene } from './three-scene.js';
 
@@ -21,13 +22,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Products Rendering & Category Filters
   initProductCatalog();
 
-  // 5. Cart Drawer & Badge Listeners
+  // 5. Product Details Modal View
+  initProductDetailsModal();
+
+  // 6. Social Media Feeds (Instagram & Facebook)
+  initSocialMediaFeeds();
+
+  // 7. Cart Drawer & Badge Listeners
   initCartDrawer();
 
-  // 6. Checkout Flow & WhatsApp Integration
+  // 8. Checkout Flow & WhatsApp Integration
   initCheckoutFlow();
 
-  // 7. Auto-fill minimum delivery date to today
+  // 9. Auto-fill minimum delivery date to today
   initDeliveryDateInput();
 });
 
@@ -187,7 +194,7 @@ function renderProductsGrid() {
   grid.innerHTML = filtered
     .map(p => {
       return `
-      <div class="product-card" data-product-id="${p.id}">
+      <div class="product-card" data-product-id="${p.id}" data-action="view-details" title="اضغط لعرض تفاصيل الباقة">
         <div class="card-img-wrap">
           <img src="${p.image}" alt="${p.title}" class="card-img" loading="lazy">
           ${p.badge ? `<span class="card-badge-tag">${p.badge}</span>` : ''}
@@ -200,9 +207,14 @@ function renderProductsGrid() {
               <span class="price-main">${p.price.toFixed(2)} د.أ</span>
               ${p.oldPrice ? `<span class="price-old">${p.oldPrice.toFixed(2)} د.أ</span>` : ''}
             </div>
-            <button type="button" class="btn-add-cart" data-action="add-to-cart" data-id="${p.id}">
-              <span>إضافة للسلة</span> 🛒
-            </button>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="card-view-btn" data-action="view-details" data-id="${p.id}" title="معاينة التفاصيل">
+                🔍 التفاصيل
+              </button>
+              <button type="button" class="btn-add-cart" data-action="add-to-cart" data-id="${p.id}" title="إضافة سريعة للسلة">
+                <span>+</span> 🛒
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -210,9 +222,21 @@ function renderProductsGrid() {
     })
     .join('');
 
+  // Attach card click handlers for details modal
+  grid.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('click', e => {
+      // Don't trigger details if clicked directly on add-to-cart
+      if (e.target.closest('[data-action="add-to-cart"]')) return;
+      const id = card.getAttribute('data-product-id');
+      const prod = getProductById(id);
+      if (prod) openProductModal(prod);
+    });
+  });
+
   // Attach add-to-cart click handler
   grid.querySelectorAll('[data-action="add-to-cart"]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
       const id = btn.getAttribute('data-id');
       const prod = getProductById(id);
       if (prod) {
@@ -221,6 +245,217 @@ function renderProductsGrid() {
       }
     });
   });
+}
+
+/**
+ * Product Details Modal System
+ */
+let currentModalProduct = null;
+let currentModalQty = 1;
+
+function initProductDetailsModal() {
+  const overlay = document.getElementById('product-details-modal-overlay');
+  const closeBtn = document.getElementById('close-prod-modal-btn');
+  const decBtn = document.getElementById('modal-qty-decrease');
+  const incBtn = document.getElementById('modal-qty-increase');
+  const qtyVal = document.getElementById('modal-qty-val');
+  const addCartBtn = document.getElementById('modal-btn-add-cart');
+  const directWaBtn = document.getElementById('modal-btn-direct-wa');
+
+  if (closeBtn && overlay) {
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('active');
+    });
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('active');
+    });
+  }
+
+  if (decBtn && incBtn && qtyVal) {
+    decBtn.addEventListener('click', () => {
+      if (currentModalQty > 1) {
+        currentModalQty--;
+        qtyVal.textContent = currentModalQty;
+      }
+    });
+    incBtn.addEventListener('click', () => {
+      currentModalQty++;
+      qtyVal.textContent = currentModalQty;
+    });
+  }
+
+  if (addCartBtn) {
+    addCartBtn.addEventListener('click', () => {
+      if (currentModalProduct) {
+        CartManager.addItem(currentModalProduct, currentModalQty);
+        showToast(`تمت إضافة (${currentModalQty}) من "${currentModalProduct.title}" إلى السلة 🌸`);
+        if (overlay) overlay.classList.remove('active');
+      }
+    });
+  }
+
+  if (directWaBtn) {
+    directWaBtn.addEventListener('click', () => {
+      if (currentModalProduct) {
+        const cleanPhone = StoreConfig.formatWhatsAppNumber(StoreConfig.defaultWhatsApp);
+        const total = (currentModalProduct.price * currentModalQty).toFixed(2);
+        let msg = `🌸 *استفسار وطلب مباشر من متجر لين للزهور* 🌸\n`;
+        msg += `─────────────────────────\n`;
+        msg += `💐 *الباقة المطلوبة:* ${currentModalProduct.title}\n`;
+        msg += `🔢 *الكمية:* ${currentModalQty}\n`;
+        msg += `💰 *السعر الإجمالي:* ${total} د.أ\n`;
+        msg += `🏷️ *القسم:* ${currentModalProduct.category}\n`;
+        if (currentModalProduct.dimensions) {
+          msg += `📐 *الأبعاد:* ${currentModalProduct.dimensions}\n`;
+        }
+        msg += `─────────────────────────\n`;
+        msg += `مرحباً، أود تأكيد طلب هذه الباقة وتزويدكم بتفاصيل التوصيل ورسالة كرت الإهداء.`;
+
+        const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, '_blank');
+      }
+    });
+  }
+}
+
+function openProductModal(prod) {
+  const overlay = document.getElementById('product-details-modal-overlay');
+  if (!overlay || !prod) return;
+
+  currentModalProduct = prod;
+  currentModalQty = 1;
+
+  const imgEl = document.getElementById('modal-img');
+  const badgeEl = document.getElementById('modal-badge');
+  const titleEl = document.getElementById('modal-title');
+  const priceEl = document.getElementById('modal-price');
+  const oldPriceEl = document.getElementById('modal-old-price');
+  const descEl = document.getElementById('modal-desc');
+  const qtyVal = document.getElementById('modal-qty-val');
+
+  // Specs
+  const specType = document.getElementById('modal-spec-flower-type');
+  const specCount = document.getElementById('modal-spec-count');
+  const specDim = document.getElementById('modal-spec-dimensions');
+  const specPack = document.getElementById('modal-spec-packaging');
+  const specFresh = document.getElementById('modal-spec-freshness');
+  const careDesc = document.getElementById('modal-care-desc');
+
+  if (imgEl) {
+    imgEl.src = prod.image;
+    imgEl.alt = prod.title;
+  }
+  if (badgeEl) {
+    badgeEl.textContent = prod.badge || 'تنسيق فاخر 🌸';
+    badgeEl.style.display = prod.badge ? 'inline-block' : 'none';
+  }
+  if (titleEl) titleEl.textContent = prod.title;
+  if (priceEl) priceEl.textContent = `${Number(prod.price).toFixed(2)} د.أ`;
+  if (oldPriceEl) {
+    if (prod.oldPrice) {
+      oldPriceEl.textContent = `${Number(prod.oldPrice).toFixed(2)} د.أ`;
+      oldPriceEl.style.display = 'inline';
+    } else {
+      oldPriceEl.style.display = 'none';
+    }
+  }
+  if (descEl) descEl.textContent = prod.description;
+  if (qtyVal) qtyVal.textContent = '1';
+
+  if (specType) specType.textContent = prod.flowerType || 'ورد جوري طبيعي مستورد درجة أولى';
+  if (specCount) specCount.textContent = prod.flowerCount || 'تنسيق متناسق ومتقن';
+  if (specDim) specDim.textContent = prod.dimensions || 'ارتفاع 45 - 55 سم تقريباً';
+  if (specPack) specPack.textContent = prod.packaging || 'تغليف فاخر مقاوم للماء وشريط ساتان';
+  if (specFresh) specFresh.textContent = prod.freshness || '7 - 10 أيام مع العناية الموصى بها';
+  if (careDesc) careDesc.textContent = prod.careTips || 'قص أطراف السيقان بزاوية 45 درجة، واستبدل الماء كل يومين وضع الباقة في مكان بارد بعيداً عن أشعة الشمس.';
+
+  overlay.classList.add('active');
+}
+
+/**
+ * Social Media Feeds (Instagram & Facebook Live Feed)
+ */
+function initSocialMediaFeeds() {
+  const igTabBtn = document.getElementById('tab-btn-ig');
+  const fbTabBtn = document.getElementById('tab-btn-fb');
+  const igView = document.getElementById('social-view-ig');
+  const fbView = document.getElementById('social-view-fb');
+  const igGrid = document.getElementById('ig-posts-grid');
+  const fbList = document.getElementById('fb-posts-list');
+
+  // Render Instagram Posts
+  if (igGrid) {
+    igGrid.innerHTML = instagramPosts
+      .map(
+        p => `
+      <div class="ig-card">
+        <div class="ig-img-wrap">
+          <img src="${p.image}" alt="منشور إنستغرام لين للزهور" class="ig-img" loading="lazy">
+          <div class="ig-overlay">
+            <span>❤️ ${p.likes}</span>
+            <span>💬 ${p.comments}</span>
+          </div>
+        </div>
+        <div class="ig-body">
+          <p class="ig-caption">${p.caption}</p>
+          <div class="ig-foot">
+            <span>📅 ${p.date}</span>
+            <a href="${p.url}" target="_blank" rel="noopener" class="ig-link">
+              <span>عرض على إنستغرام</span> ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    `
+      )
+      .join('');
+  }
+
+  // Render Facebook Posts
+  if (fbList) {
+    fbList.innerHTML = facebookPosts
+      .map(
+        p => `
+      <div class="fb-card">
+        <div class="fb-header">
+          <div class="fb-avatar">🌸</div>
+          <div class="fb-page-info">
+            <h5>${p.author} <span style="color:#1877f2;">✓</span></h5>
+            <span>${p.time}</span>
+          </div>
+        </div>
+        <p class="fb-content">${p.content}</p>
+        <div class="fb-img-wrap">
+          <img src="${p.image}" alt="صورة منشور فيسبوك" loading="lazy">
+        </div>
+        <div class="fb-stats-bar">
+          <span>👍 ${p.likes} إعجاب · ${p.comments} تعليق</span>
+          <a href="${p.url}" target="_blank" rel="noopener" class="fb-link-btn">
+            <span>مشاهدة المنشور الأصلي</span> 📘
+          </a>
+        </div>
+      </div>
+    `
+      )
+      .join('');
+  }
+
+  // Switch tabs
+  if (igTabBtn && fbTabBtn && igView && fbView) {
+    igTabBtn.addEventListener('click', () => {
+      igTabBtn.classList.add('active');
+      fbTabBtn.classList.remove('active');
+      igView.style.display = 'block';
+      fbView.style.display = 'none';
+    });
+
+    fbTabBtn.addEventListener('click', () => {
+      fbTabBtn.classList.add('active');
+      igTabBtn.classList.remove('active');
+      igView.style.display = 'none';
+      fbView.style.display = 'block';
+    });
+  }
 }
 
 /**
