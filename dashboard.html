@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="blush">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم لين للزهور | Leen Flowers Admin Dashboard</title>
+  
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="dashboard-page">
+
+  <!-- Dashboard Top Header -->
+  <header class="dashboard-header">
+    <div class="container">
+      <div class="dashboard-nav-inner">
+        <div class="logo-area">
+          <div class="logo-icon">⚙️</div>
+          <div class="logo-text">
+            <h2>لوحة إدارة المتجر</h2>
+            <span>LEEN FLOWERS DASHBOARD (PHASE 2 READY)</span>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px;">
+          <!-- 3-Theme Switcher -->
+          <div class="theme-switcher-box">
+            <button type="button" class="theme-btn active" data-set-theme="blush">🌸 روز</button>
+            <button type="button" class="theme-btn" data-set-theme="lavender">🪻 لافندر</button>
+            <button type="button" class="theme-btn" data-set-theme="midnight">🌙 دارك</button>
+          </div>
+
+          <a href="index.html" class="btn-back-store">
+            <span>العودة للمتجر</span> 🌸
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- Stats Cards Row -->
+    <div class="dashboard-stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">💐</div>
+        <div class="stat-info">
+          <h5>إجمالي الباقات والمنتجات</h5>
+          <div class="stat-num" id="stat-total-products">0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🛍️</div>
+        <div class="stat-info">
+          <h5>الطلبات المسجلة</h5>
+          <div class="stat-num" id="stat-total-orders">0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+          <h5>المبيعات التقديرية</h5>
+          <div class="stat-num" id="stat-total-revenue">0.00 د.أ</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#e6f9ed; color:#25d366;">💬</div>
+        <div class="stat-info">
+          <h5>رقم الواتساب النشط</h5>
+          <div class="stat-num" style="font-size:1.15rem;" id="stat-active-phone">0797035039</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Store Settings & WhatsApp Configuration Card -->
+    <div class="dashboard-card">
+      <div class="dash-card-header">
+        <h3>⚙️ <span>إعدادات المتجر ورقم الواتساب للطلبات</span></h3>
+        <span class="status-badge in-stock">جاهز للربط بقاعدة البيانات</span>
+      </div>
+
+      <form id="settings-form">
+        <div class="config-grid">
+          <div class="form-field">
+            <label for="cfg-store-name">اسم المتجر</label>
+            <input type="text" id="cfg-store-name" required>
+          </div>
+
+          <div class="form-field">
+            <label for="cfg-whatsapp-phone">رقم الواتساب لاستقبال الطلبات (مبدئي أو مخصص) <span class="req">*</span></label>
+            <input type="tel" id="cfg-whatsapp-phone" required placeholder="0797035039">
+            <small style="color:var(--text-muted); font-size:0.75rem; margin-top:2px;">
+              * يمكنك تغيير الرقم هنا في أي وقت وسيتم توجيه جميع طلبات الزبائن مباشرة إليه!
+            </small>
+          </div>
+
+          <div class="form-field">
+            <label for="cfg-instagram-url">رابط الإنستغرام</label>
+            <input type="url" id="cfg-instagram-url">
+          </div>
+
+          <div class="form-field">
+            <label for="cfg-facebook-url">رابط الفيسبوك</label>
+            <input type="url" id="cfg-facebook-url">
+          </div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; gap:12px; justify-content:flex-end;">
+          <button type="submit" class="dash-btn-primary">
+            <span>حفظ الإعدادات</span> 💾
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Products Catalog Management -->
+    <div class="dashboard-card">
+      <div class="dash-card-header">
+        <h3>🌹 <span>إدارة باقات الزهور والمنتجات</span></h3>
+        <div class="dash-card-actions">
+          <button type="button" class="dash-btn-outline" id="btn-reset-products">
+            <span>استعادة الافتراضية</span> 🔄
+          </button>
+          <button type="button" class="dash-btn-primary" id="btn-open-add-product">
+            <span>+ إضافة باقة جديدة</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>الصورة</th>
+              <th>اسم الباقة / المنتج</th>
+              <th>القسم</th>
+              <th>السعر الحالي</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-products-tbody">
+            <!-- Rendered by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Orders Log (Phase 2 Preview) -->
+    <div class="dashboard-card">
+      <div class="dash-card-header">
+        <h3>📋 <span>سجل الطلبات الواردة (تمهيد للمرحلة الثانية)</span></h3>
+        <button type="button" class="dash-btn-outline" id="btn-clear-orders">
+          <span>مسح السجل التجريبي</span> 🗑️
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>رقم الطلب</th>
+              <th>تاريخ الطلب</th>
+              <th>المشتري</th>
+              <th>المستلم والمدينة</th>
+              <th>المنتجات المطلوبة</th>
+              <th>المجموع الكلي</th>
+              <th>كرت الإهداء</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-orders-tbody">
+            <!-- Rendered by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Add Product Modal -->
+  <div class="checkout-modal-overlay" id="add-product-modal-overlay">
+    <div class="checkout-modal">
+      <div class="checkout-modal-head">
+        <h3>🌹 <span>إضافة باقة ورد / منتج جديد</span></h3>
+        <button type="button" class="btn-close-drawer" id="close-add-modal-btn">✕</button>
+      </div>
+
+      <form id="add-product-form" class="checkout-modal-body">
+        <div class="form-field">
+          <label for="new-prod-title">اسم الباقة أو الهدية <span class="req">*</span></label>
+          <input type="text" id="new-prod-title" required placeholder="مثال: باقة ربيع الأحلام">
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="new-prod-category">القسم <span class="req">*</span></label>
+            <select id="new-prod-category" required>
+              <option value="natural-bouquets">باقات ورد طبيعي</option>
+              <option value="gift-boxes">بوكسات ورد وهدايا</option>
+              <option value="vases">فازات واستاندات فاخرة</option>
+              <option value="occasions">مناسبات وتخرج وأعراس</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="new-prod-price">السعر بالدينار الأردني (JOD) <span class="req">*</span></label>
+            <input type="number" id="new-prod-price" step="0.5" min="1" required placeholder="مثال: 30.0">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="new-prod-badge">شارة مميزة (Badge)</label>
+          <input type="text" id="new-prod-badge" placeholder="مثال: حصري ✨ / الأكثر طلباً ⭐">
+        </div>
+
+        <div class="form-field">
+          <label for="new-prod-image">رابط صورة الورد (URL) <span class="req">*</span></label>
+          <input type="url" id="new-prod-image" required placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80">
+        </div>
+
+        <div class="form-field">
+          <label for="new-prod-desc">الوصف التفصيلي للباقة <span class="req">*</span></label>
+          <textarea id="new-prod-desc" rows="3" required placeholder="محتويات الباقة، نوع الورد، طريقة التغليف..."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:14px;">
+          <button type="submit" class="dash-btn-primary">
+            <span>حفظ وإضافة للمتجر</span> ✨
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-notice" id="toast-notice"></div>
+
+  <!-- Dashboard Script -->
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
