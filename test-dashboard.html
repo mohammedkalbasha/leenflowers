@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard E2E Test Suite</title>
+  <style>body { font-family: monospace; background: #111; color: #eee; padding: 20px; }</style>
+</head>
+<body>
+  <h1>Dashboard Test Suite</h1>
+  <div id="results"></div>
+  <iframe id="dash-frame" src="dashboard.html" style="width:1200px; height:800px; background:#fff;"></iframe>
+
+  <script>
+    const resultsDiv = document.getElementById('results');
+    const iframe = document.getElementById('dash-frame');
+    window.__TEST_RESULTS__ = { total: 0, passed: 0, failed: 0 };
+
+    function log(msg, pass = true) {
+      window.__TEST_RESULTS__.total++;
+      if (pass) window.__TEST_RESULTS__.passed++;
+      else window.__TEST_RESULTS__.failed++;
+      const d = document.createElement('div');
+      d.textContent = (pass ? '✅ PASS: ' : '❌ FAIL: ') + msg;
+      d.style.color = pass ? '#4ade80' : '#f87171';
+      resultsDiv.appendChild(d);
+      console.log(d.textContent);
+    }
+
+    iframe.onload = async () => {
+      const doc = iframe.contentDocument;
+      const win = iframe.contentWindow;
+
+      await new Promise(r => setTimeout(r, 600));
+
+      // 1. Stats
+      const statProds = doc.getElementById('stat-total-products');
+      log('Dashboard products stat is 8', statProds && parseInt(statProds.textContent, 10) === 8);
+
+      const statPhone = doc.getElementById('stat-active-phone');
+      log('Dashboard displays active phone', statPhone && statPhone.textContent.includes('0797035039'));
+
+      // 2. Products table
+      const tbody = doc.getElementById('dashboard-products-tbody');
+      log('Dashboard table contains 8 product rows', tbody && tbody.children.length === 8);
+
+      // 3. Settings Form
+      const storeNameInput = doc.getElementById('cfg-store-name');
+      const storePhoneInput = doc.getElementById('cfg-whatsapp-phone');
+      const settingsForm = doc.getElementById('settings-form');
+
+      if (storeNameInput && storePhoneInput && settingsForm) {
+        storeNameInput.value = 'متجر لين للزهور الفاخرة - عمان';
+        storePhoneInput.value = '0797035039';
+        settingsForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        await new Promise(r => setTimeout(r, 200));
+
+        const savedCfg = JSON.parse(win.localStorage.getItem('leen_flowers_config') || '{}');
+        log('Settings successfully saved to localStorage', savedCfg.name === 'متجر لين للزهور الفاخرة - عمان');
+      }
+
+      // 4. Add Product Modal
+      const openAddBtn = doc.getElementById('btn-open-add-product');
+      const modal = doc.getElementById('add-product-modal-overlay');
+      if (openAddBtn && modal) {
+        openAddBtn.click();
+        await new Promise(r => setTimeout(r, 200));
+        log('Add Product modal opens', modal.classList.contains('active'));
+
+        const titleInput = doc.getElementById('new-prod-title');
+        const priceInput = doc.getElementById('new-prod-price');
+        const addForm = doc.getElementById('add-product-form');
+
+        titleInput.value = 'باقة التيوليب الأبيض والذهب';
+        priceInput.value = '55';
+        addForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        await new Promise(r => setTimeout(r, 200));
+
+        log('Product added, table now has 9 rows', tbody && tbody.children.length === 9);
+        log('Add modal closed after creation', !modal.classList.contains('active'));
+      }
+
+      const summary = document.createElement('div');
+      summary.style.fontWeight = 'bold';
+      summary.style.marginTop = '15px';
+      summary.textContent = `DASHBOARD TEST COMPLETE: ${window.__TEST_RESULTS__.passed}/${window.__TEST_RESULTS__.total} Passed (${window.__TEST_RESULTS__.failed} Failed)`;
+      resultsDiv.appendChild(summary);
+      window.__TEST_COMPLETED__ = true;
+    };
+  </script>
+</body>
+</html>

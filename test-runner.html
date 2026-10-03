@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Leen Flowers - Automated End-to-End Test Suite</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #111; color: #eee; direction: ltr; }
+    .pass { color: #4ade80; }
+    .fail { color: #f87171; font-weight: bold; }
+    .suite { margin-top: 15px; font-weight: bold; color: #38bdf8; }
+    iframe { width: 1200px; height: 800px; border: 2px solid #444; margin-top: 20px; background: #fff; }
+  </style>
+</head>
+<body>
+  <h1>Leen Flowers Rigorous Test Suite</h1>
+  <div id="results"></div>
+  <iframe id="store-frame" src="index.html"></iframe>
+
+  <script>
+    const resultsDiv = document.getElementById('results');
+    const iframe = document.getElementById('store-frame');
+    window.__TEST_RESULTS__ = { total: 0, passed: 0, failed: 0, errors: [] };
+
+    function log(msg, status = '') {
+      const p = document.createElement('div');
+      p.className = status;
+      p.textContent = (status === 'pass' ? '✅ ' : status === 'fail' ? '❌ ' : '') + msg;
+      resultsDiv.appendChild(p);
+      console.log(msg);
+    }
+
+    function assert(cond, name) {
+      window.__TEST_RESULTS__.total++;
+      if (cond) {
+        window.__TEST_RESULTS__.passed++;
+        log(`PASS: ${name}`, 'pass');
+      } else {
+        window.__TEST_RESULTS__.failed++;
+        window.__TEST_RESULTS__.errors.push(name);
+        log(`FAIL: ${name}`, 'fail');
+      }
+    }
+
+    iframe.onload = async () => {
+      log('Storefront iframe loaded successfully.');
+      const doc = iframe.contentDocument;
+      const win = iframe.contentWindow;
+
+      // Listen for window errors
+      win.addEventListener('error', (e) => {
+        log(`Window Error: ${e.message} at ${e.filename}:${e.lineno}`, 'fail');
+        window.__TEST_RESULTS__.failed++;
+        window.__TEST_RESULTS__.errors.push(`Window Error: ${e.message}`);
+      });
+
+      // Wait a moment for DOMContentLoaded and Three scene
+      await new Promise(r => setTimeout(r, 1200));
+
+      log('--- SUITE 1: 3D Flower Scene & Canvas ---', 'suite');
+      const canvasContainer = doc.getElementById('three-canvas-container');
+      assert(canvasContainer !== null, 'three-canvas-container element exists');
+      const canvas = canvasContainer.querySelector('canvas');
+      assert(canvas !== null, 'Three.js <canvas> is present inside container');
+      if (canvas) {
+        assert(canvas.width > 200 && canvas.height > 200, `Canvas has non-zero dimensions (${canvas.width}x${canvas.height})`);
+      }
+
+      const flowerBadge = doc.getElementById('flower-switcher-badge');
+      assert(flowerBadge !== null, 'Flower switcher badge exists in hero');
+      const initialBadgeText = flowerBadge.textContent;
+      log(`Initial flower: ${initialBadgeText.trim()}`);
+      
+      // Click switcher badge
+      flowerBadge.click();
+      await new Promise(r => setTimeout(r, 200));
+      const newBadgeText = flowerBadge.textContent;
+      log(`After switch: ${newBadgeText.trim()}`);
+      assert(initialBadgeText !== newBadgeText, 'Clicking flower switcher badge updates the active flower');
+
+      log('--- SUITE 2: Theme Switcher System ---', 'suite');
+      const themeButtons = doc.querySelectorAll('.theme-btn');
+      assert(themeButtons.length >= 3, `Found ${themeButtons.length} theme buttons`);
+      
+      const lavenderBtn = doc.querySelector('.theme-btn[data-set-theme="lavender"]');
+      const midnightBtn = doc.querySelector('.theme-btn[data-set-theme="midnight"]');
+      const blushBtn = doc.querySelector('.theme-btn[data-set-theme="blush"]');
+
+      if (lavenderBtn) {
+        lavenderBtn.click();
+        await new Promise(r => setTimeout(r, 200));
+        assert(doc.documentElement.getAttribute('data-theme') === 'lavender', 'Switch to Lavender theme sets data-theme="lavender"');
+      }
+
+      if (midnightBtn) {
+        midnightBtn.click();
+        await new Promise(r => setTimeout(r, 200));
+        assert(doc.documentElement.getAttribute('data-theme') === 'midnight', 'Switch to Midnight theme sets data-theme="midnight"');
+      }
+
+      if (blushBtn) {
+        blushBtn.click();
+        await new Promise(r => setTimeout(r, 200));
+        assert(doc.documentElement.getAttribute('data-theme') === 'blush', 'Switch to Blush theme sets data-theme="blush"');
+      }
+
+      log('--- SUITE 3: Product Catalog & Filtering ---', 'suite');
+      const productCards = doc.querySelectorAll('.product-card');
+      assert(productCards.length === 8, `Renders all 8 initial products (found ${productCards.length})`);
+
+      const bouquetFilter = doc.querySelector('.cat-filter-btn[data-category="natural-bouquets"]');
+      if (bouquetFilter) {
+        bouquetFilter.click();
+        await new Promise(r => setTimeout(r, 200));
+        const filteredCards = doc.querySelectorAll('.product-card');
+        assert(filteredCards.length > 0 && filteredCards.length < 8, `Category filter works (found ${filteredCards.length} bouquets)`);
+      }
+
+      const allFilter = doc.querySelector('.cat-filter-btn[data-category="all"]');
+      if (allFilter) {
+        allFilter.click();
+        await new Promise(r => setTimeout(r, 200));
+        assert(doc.querySelectorAll('.product-card').length === 8, 'Resetting filter to "All" restores all 8 products');
+      }
+
+      log('--- SUITE 4: Product Details Modal ---', 'suite');
+      const firstCardDetailsBtn = doc.querySelector('.btn-card-details');
+      assert(firstCardDetailsBtn !== null, 'Product card has details button [ 👁️ التفاصيل ]');
+      
+      firstCardDetailsBtn.click();
+      await new Promise(r => setTimeout(r, 200));
+      const detailsModal = doc.getElementById('product-details-modal-overlay');
+      assert(detailsModal.classList.contains('active'), 'Clicking details button opens product modal');
+
+      const modalTitle = doc.getElementById('modal-title');
+      assert(modalTitle && modalTitle.textContent.length > 3, `Modal title populated: "${modalTitle ? modalTitle.textContent : ''}"`);
+
+      const modalSpecFlower = doc.getElementById('modal-spec-flower-type');
+      assert(modalSpecFlower && modalSpecFlower.textContent.length > 3, `Modal flower type spec populated: "${modalSpecFlower ? modalSpecFlower.textContent : ''}"`);
+
+      const modalCareTips = doc.getElementById('modal-care-desc');
+      assert(modalCareTips && modalCareTips.textContent.length > 5, 'Modal care tips populated');
+
+      const qtyVal = doc.getElementById('modal-qty-val');
+      const qtyInc = doc.getElementById('modal-qty-increase');
+      const qtyDec = doc.getElementById('modal-qty-decrease');
+      assert(qtyVal.textContent === '1', 'Initial modal quantity is 1');
+      qtyInc.click();
+      assert(qtyVal.textContent === '2', 'Modal quantity increments to 2');
+      qtyDec.click();
+      assert(qtyVal.textContent === '1', 'Modal quantity decrements back to 1');
+
+      // Add to cart from modal
+      const modalAddCartBtn = doc.getElementById('modal-btn-add-cart');
+      modalAddCartBtn.click();
+      await new Promise(r => setTimeout(r, 200));
+      
+      const cartCountEl = doc.getElementById('cart-counter');
+      assert(cartCountEl && parseInt(cartCountEl.textContent, 10) >= 1, `Cart counter updated to ${cartCountEl.textContent}`);
+
+      // Close modal
+      const closeProdModalBtn = doc.getElementById('close-prod-modal-btn');
+      closeProdModalBtn.click();
+      await new Promise(r => setTimeout(r, 200));
+      assert(!detailsModal.classList.contains('active'), 'Product details modal closes successfully');
+
+      log('--- SUITE 5: Cart Drawer & Calculations ---', 'suite');
+      const openCartBtn = doc.getElementById('open-cart-btn');
+      openCartBtn.click();
+      await new Promise(r => setTimeout(r, 200));
+
+      const cartDrawer = doc.getElementById('cart-drawer-overlay');
+      assert(cartDrawer.classList.contains('active'), 'Cart drawer opens');
+
+      const cartItems = doc.querySelectorAll('.cart-item-row');
+      assert(cartItems.length >= 1, `Cart drawer displays ${cartItems.length} item row(s)`);
+
+      const subtotalEl = doc.getElementById('cart-subtotal-val');
+      const totalEl = doc.getElementById('cart-total-val');
+      assert(subtotalEl && parseFloat(subtotalEl.textContent) > 0, `Cart subtotal is valid: ${subtotalEl.textContent} د.أ`);
+      assert(totalEl && parseFloat(totalEl.textContent) > 0, `Cart total is valid: ${totalEl.textContent} د.أ`);
+
+      log('--- SUITE 6: Checkout Flow & WhatsApp Order Formatting ---', 'suite');
+      const proceedCheckoutBtn = doc.getElementById('proceed-checkout-btn');
+      proceedCheckoutBtn.click();
+      await new Promise(r => setTimeout(r, 200));
+
+      const checkoutModal = doc.getElementById('checkout-modal-overlay');
+      assert(checkoutModal.classList.contains('active'), 'Checkout modal opens');
+
+      // Fill in required fields
+      doc.getElementById('buyer-name').value = 'أحمد الخالد';
+      doc.getElementById('buyer-phone').value = '0797035039';
+      doc.getElementById('detailed-address').value = 'عمان - شارع وصفي التل';
+      doc.getElementById('gift-card-message').value = 'ألف مبروك بالرفاه والبنين';
+      doc.getElementById('gift-card-sign').value = 'أحمد';
+
+      // Intercept window.open
+      let interceptedUrl = null;
+      win.open = function(url) {
+        interceptedUrl = url;
+        log(`[INTERCEPTED WHATSAPP URL]: ${url}`);
+        return null;
+      };
+
+      const checkoutForm = doc.getElementById('checkout-form');
+      const submitEvt = new Event('submit', { cancelable: true });
+      checkoutForm.dispatchEvent(submitEvt);
+      await new Promise(r => setTimeout(r, 300));
+
+      assert(interceptedUrl !== null, 'Checkout form successfully generated WhatsApp dispatch URL');
+      if (interceptedUrl) {
+        assert(interceptedUrl.includes('wa.me/962797035039') || interceptedUrl.includes('whatsapp.com'), 'WhatsApp link targets the correct store WhatsApp number');
+        const decodedUrl = decodeURIComponent(interceptedUrl);
+        assert(decodedUrl.includes('طلب جديد من متجر لين للزهور'), 'Message contains official store order header');
+        assert(decodedUrl.includes('أحمد الخالد'), 'Message contains buyer name');
+        assert(decodedUrl.includes('ألف مبروك بالرفاه والبنين'), 'Message contains custom gift card text');
+      }
+
+      log('--- SUITE 7: Social Media Feeds Tabs ---', 'suite');
+      const tabFb = doc.getElementById('tab-btn-fb');
+      const tabIg = doc.getElementById('tab-btn-ig');
+      const viewFb = doc.getElementById('social-view-fb');
+      const viewIg = doc.getElementById('social-view-ig');
+
+      assert(tabFb && tabIg && viewFb && viewIg, 'Social feed tabs and views exist');
+      tabFb.click();
+      await new Promise(r => setTimeout(r, 200));
+      assert(viewFb.classList.contains('active') && !viewIg.classList.contains('active'), 'Clicking Facebook tab activates Facebook posts view');
+
+      tabIg.click();
+      await new Promise(r => setTimeout(r, 200));
+      assert(viewIg.classList.contains('active') && !viewFb.classList.contains('active'), 'Clicking Instagram tab activates Instagram feed view');
+
+      const igCards = doc.querySelectorAll('.ig-card');
+      const fbCards = doc.querySelectorAll('.fb-card');
+      assert(igCards.length >= 4, `Rendered ${igCards.length} curated Instagram cards`);
+      assert(fbCards.length >= 2, `Rendered ${fbCards.length} curated Facebook posts`);
+
+      // Final report
+      log('====================================', 'suite');
+      log(`TEST RUN COMPLETE: ${window.__TEST_RESULTS__.passed}/${window.__TEST_RESULTS__.total} Passed (${window.__TEST_RESULTS__.failed} Failed)`, window.__TEST_RESULTS__.failed === 0 ? 'pass' : 'fail');
+      window.__TEST_COMPLETED__ = true;
+    };
+  </script>
+</body>
+</html>

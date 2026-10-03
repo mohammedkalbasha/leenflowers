@@ -1839,6 +1839,8 @@ function initSocialMediaFeeds() {
     igTabBtn.addEventListener('click', () => {
       igTabBtn.classList.add('active');
       fbTabBtn.classList.remove('active');
+      igView.classList.add('active');
+      fbView.classList.remove('active');
       igView.style.display = 'block';
       fbView.style.display = 'none';
     });
@@ -1846,6 +1848,8 @@ function initSocialMediaFeeds() {
     fbTabBtn.addEventListener('click', () => {
       fbTabBtn.classList.add('active');
       igTabBtn.classList.remove('active');
+      fbView.classList.add('active');
+      igView.classList.remove('active');
       igView.style.display = 'none';
       fbView.style.display = 'block';
     });
