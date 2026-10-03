@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="blush">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لين للزهور | Leen Flowers - متجر الزهور والهدايا الفاخرة</title>
+  <meta name="description" content="متجر لين للزهور - أرقى باقات الورد الطبيعي، بوكسات الهدايا، فازات واستاندات المناسبات مع كرت إهداء مجاني وتوصيل سريع في الأردن.">
+  
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <!-- Three.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-bar">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+      <div>
+        <span>💐 بطاقة إهداء فاخرة مجاناً مع كل باقة | 📞 للطلب المباشر: <a href="tel:0797035039" style="text-decoration:underline;">0797035039</a></span>
+      </div>
+      <div class="top-bar-links">
+        <a href="https://www.instagram.com/leen_flower11" target="_blank" rel="noopener" title="إنستغرام لين للزهور">
+          <span>Instagram</span> 📸
+        </a>
+        <a href="https://www.facebook.com/p/Leen-Flowers-100090007161366/" target="_blank" rel="noopener" title="فيسبوك لين للزهور">
+          <span>Facebook</span> 📘
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Site Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="nav-inner">
+        <!-- Logo -->
+        <a href="index.html" class="logo-area">
+          <div class="logo-icon">🌸</div>
+          <div class="logo-text">
+            <h1>لين للزهور</h1>
+            <span>LEEN FLOWERS</span>
+          </div>
+        </a>
+
+        <!-- 3-Themes Live Switcher -->
+        <div class="theme-switcher-box" title="اختر التصميم والهوية البصرية">
+          <button type="button" class="theme-btn active" data-set-theme="blush">
+            <span>🌸</span> روز جولد
+          </button>
+          <button type="button" class="theme-btn" data-set-theme="lavender">
+            <span>🪻</span> لافندر نضر
+          </button>
+          <button type="button" class="theme-btn" data-set-theme="midnight">
+            <span>🌙</span> دارك ملكي
+          </button>
+        </div>
+
+        <!-- Header Actions: Cart & Dashboard -->
+        <div class="header-actions">
+          <a href="dashboard.html" class="dashboard-link-btn" title="لوحة تحكم المتجر للمرحلة الثانية">
+            ⚙️ <span>لوحة التحكم</span>
+          </a>
+          <button type="button" class="cart-toggle-btn" id="open-cart-btn" aria-label="عرض سلة التسوق">
+            🛒
+            <span class="cart-badge" id="cart-counter">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section with Interactive 3D Canvas -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Text Content -->
+        <div class="hero-content">
+          <div class="hero-pill">
+            <span>✨ إبداع في تنسيق الزهور الطبيعية</span>
+          </div>
+          <h2 class="hero-title">
+            زهور تُحاكي مشاعرك <br>
+            <span>بأرقى تفاصيلها</span>
+          </h2>
+          <p class="hero-description">
+            نقدم لكم أرقى تشكيلات الورد الطبيعي الهولندي، بوكسات الهدايا المخملية، وتنسيقات المناسبات والتخرج في الأردن. اختر باقتك، ودعنا نوصل مشاعرك بكل حب.
+          </p>
+          <div class="hero-actions">
+            <a href="#store-catalog" class="btn-primary">
+              <span>تصفح الباقات والهدايا</span> 💐
+            </a>
+            <a href="https://wa.me/962797035039" target="_blank" rel="noopener" class="btn-whatsapp-hero" id="hero-wa-btn">
+              <span>طلب مباشر عبر الواتساب</span> 💬
+            </a>
+          </div>
+        </div>
+
+        <!-- 3D Canvas Showcase -->
+        <div class="hero-3d-wrapper">
+          <div class="hero-3d-card">
+            <div id="three-canvas-container"></div>
+            <div class="three-hint-badge">
+              <span>👆 تفاعل مع الزهرة (حرّك باللمس أو الماوس)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Features Banner -->
+  <section class="features-strip">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🌹</div>
+          <div class="feature-info">
+            <h4>ورد هولندي طازج</h4>
+            <p>قطف يومي يضمن نضارة تدوم طويلاً</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🚀</div>
+          <div class="feature-info">
+            <h4>توصيل سريع ودقيق</h4>
+            <p>لكافة مناطق عمان والمحافظات</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">💌</div>
+          <div class="feature-info">
+            <h4>بطاقة إهداء مخصصة</h4>
+            <p>كرت إهداء فاخر مجاناً مع كل طلب</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">💬</div>
+          <div class="feature-info">
+            <h4>تأكيد فوري عبر الواتس</h4>
+            <p>طلب كامل وسهل بضغطة زر واحدة</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Store Catalog Section -->
+  <section class="store-section" id="store-catalog">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-pill">تشكيلة لين للزهور</span>
+        <h3 class="section-title">اختر هديتك المفضلة</h3>
+        <p class="section-sub">تنسيقات صنعت بحرفية وشغف لتليق بأجمل لحظاتكم ومناسباتكم الخاصة</p>
+      </div>
+
+      <!-- Filters & Search Bar -->
+      <div class="filters-bar">
+        <div class="category-pills" id="category-filters">
+          <!-- Populated dynamically via app.js -->
+        </div>
+
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="ابحث عن باقة أو هدية..." aria-label="البحث في المتجر">
+          <span class="search-icon">🔍</span>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid" id="products-grid">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay">
+    <div class="cart-drawer">
+      <div class="cart-drawer-head">
+        <h3>🛒 <span>سلة المشتريات</span></h3>
+        <button type="button" class="btn-close-drawer" id="close-cart-btn" aria-label="إغلاق السلة">✕</button>
+      </div>
+
+      <div class="cart-items-list" id="cart-items-container">
+        <!-- Cart Items rendered here -->
+      </div>
+
+      <div class="cart-drawer-foot" id="cart-footer">
+        <div class="cart-summary-line">
+          <span>قيمة المنتجات:</span>
+          <span id="cart-subtotal-val">0.00 د.أ</span>
+        </div>
+        <div class="cart-summary-line">
+          <span>بطاقة الإهداء:</span>
+          <span style="color:var(--primary); font-weight:bold;">مجاناً ✨</span>
+        </div>
+        <div class="cart-summary-line total">
+          <span>المجموع الكلي:</span>
+          <span class="price" id="cart-total-val">0.00 د.أ</span>
+        </div>
+        <button type="button" class="btn-proceed-checkout" id="proceed-checkout-btn">
+          <span>متابعة لإتمام الطلب</span> 📝
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comprehensive Checkout Modal -->
+  <div class="checkout-modal-overlay" id="checkout-modal-overlay">
+    <div class="checkout-modal">
+      <div class="checkout-modal-head">
+        <h3>💌 <span>تفاصيل التوصيل وبطاقة الإهداء</span></h3>
+        <button type="button" class="btn-close-drawer" id="close-checkout-btn" aria-label="إغلاق">✕</button>
+      </div>
+
+      <form id="checkout-form" class="checkout-modal-body">
+        <!-- Section 1: Buyer Info -->
+        <div class="form-group-section">
+          <div class="form-section-title">
+            <span>👤</span> بيانات المشتري
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="buyer-name">اسم المشتري الكريم <span class="req">*</span></label>
+              <input type="text" id="buyer-name" required placeholder="مثال: أحمد عبد الله">
+            </div>
+            <div class="form-field">
+              <label for="buyer-phone">رقم هاتف المشتري <span class="req">*</span></label>
+              <input type="tel" id="buyer-phone" required placeholder="مثال: 0791234567">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Recipient Info -->
+        <div class="form-group-section">
+          <div class="form-section-title">
+            <span>🎁</span> بيانات المستلم (المرسل إليه)
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="recipient-name">اسم المستلم</label>
+              <input type="text" id="recipient-name" placeholder="اتركه فارغاً إذا كان الطلب لك شخصياً">
+            </div>
+            <div class="form-field">
+              <label for="recipient-phone">رقم هاتف المستلم</label>
+              <input type="tel" id="recipient-phone" placeholder="للتنسيق مع المستلم وقت الوصول">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Delivery Details -->
+        <div class="form-group-section">
+          <div class="form-section-title">
+            <span>📍</span> موقع وموعد التوصيل
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="city-select">المدينة / المنطقة في الأردن <span class="req">*</span></label>
+              <select id="city-select" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="delivery-date">تاريخ التوصيل المطلوب <span class="req">*</span></label>
+              <input type="date" id="delivery-date" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="delivery-time">الفترة الزمنية المفضلة</label>
+              <select id="delivery-time">
+                <option value="صباحاً (10:00 ص - 1:00 م)">صباحاً (10:00 ص - 1:00 م)</option>
+                <option value="بعد الظهر (1:00 م - 5:00 م)">بعد الظهر (1:00 م - 5:00 م)</option>
+                <option value="مساءً (5:00 م - 9:00 م)" selected>مساءً (5:00 م - 9:00 م)</option>
+                <option value="في أقرب وقت ممكن">في أقرب وقت ممكن ⚡</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="detailed-address">العنوان التفصيلي <span class="req">*</span></label>
+              <input type="text" id="detailed-address" required placeholder="الشارع، اسم العمارة، رقم الشقة">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Personalized Gift Card -->
+        <div class="form-group-section">
+          <div class="form-section-title">
+            <span>💌</span> بطاقة الإهداء (مجاناً)
+          </div>
+          <div class="form-field" style="margin-bottom:12px;">
+            <label for="gift-card-message">اكتب رسالتك لطباعتها في كرت الإهداء</label>
+            <textarea id="gift-card-message" class="gift-card-textarea" placeholder="اكتب مشاعرك هنا... مثلاً: كل عام وأنتِ الأجمل، دمتِ لي نوراً وسعادة 🌸"></textarea>
+          </div>
+          <div class="form-field">
+            <label for="gift-card-sign">التوقيع على الكرت</label>
+            <input type="text" id="gift-card-sign" placeholder="مثال: من محبك / فاعل خير / اسمك">
+          </div>
+        </div>
+
+        <!-- Section 5: Extra Notes -->
+        <div class="form-group-section">
+          <div class="form-section-title">
+            <span>📝</span> أي ملاحظات إضافية
+          </div>
+          <div class="form-field">
+            <textarea id="order-notes" rows="2" placeholder="أي طلب خاص بالتغليف أو موعد الوصول أو لون الشريطة..."></textarea>
+          </div>
+        </div>
+      </form>
+
+      <div class="checkout-modal-foot">
+        <div class="checkout-total-indicator">
+          <span>المجموع المستحق:</span>
+          <strong id="modal-total-display">0.00 د.أ</strong>
+        </div>
+        <button type="submit" form="checkout-form" class="btn-send-whatsapp-final" id="submit-order-wa-btn">
+          <span>إرسال وتأكيد الطلب عبر الواتساب</span> 💬
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Direct WhatsApp Button -->
+  <a href="https://wa.me/962797035039" target="_blank" rel="noopener" class="whatsapp-floating-btn" id="floating-wa-btn" title="تواصل مباشر عبر الواتساب">
+    💬
+  </a>
+
+  <!-- Toast Notification Message -->
+  <div class="toast-notice" id="toast-notice"></div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo-area" style="margin-bottom:12px;">
+            <div class="logo-icon">🌸</div>
+            <div class="logo-text">
+              <h2>لين للزهور</h2>
+              <span>LEEN FLOWERS</span>
+            </div>
+          </div>
+          <p>متجر لين للزهور - نبتكر أرقى باقات وتنسيقات الورد الطبيعي والهدايا الفاخرة التي تخلد أجمل ذكرياتكم في الأردن.</p>
+          <div class="footer-socials">
+            <a href="https://www.instagram.com/leen_flower11" target="_blank" rel="noopener" class="social-icon-btn" title="إنستغرام">📸</a>
+            <a href="https://www.facebook.com/p/Leen-Flowers-100090007161366/" target="_blank" rel="noopener" class="social-icon-btn" title="فيسبوك">📘</a>
+            <a href="https://wa.me/962797035039" target="_blank" rel="noopener" class="social-icon-btn" title="واتساب" id="footer-wa-icon">💬</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>أقسام المتجر</h4>
+          <ul class="footer-links">
+            <li><a href="#store-catalog" data-category="natural-bouquets">باقات ورد طبيعي</a></li>
+            <li><a href="#store-catalog" data-category="gift-boxes">بوكسات ورد وهدايا</a></li>
+            <li><a href="#store-catalog" data-category="vases">فازات واستاندات</a></li>
+            <li><a href="#store-catalog" data-category="occasions">أعراس ومناسبات</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>معلومات التواصل</h4>
+          <ul class="footer-links">
+            <li>📍 الأردن - عمان</li>
+            <li>📞 هاتف / واتساب: <a href="tel:0797035039" id="footer-phone-display">0797035039</a></li>
+            <li>⏰ ساعات العمل: يومياً 9:00 ص - 11:00 م</li>
+            <li><a href="dashboard.html" style="color:var(--primary); font-weight:bold;">⚙️ لوحة الإدارة (Phase 2 Preview)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 متجر لين للزهور (Leen Flowers) - جميع الحقوق محفوظة | صُمم بحب وإتقان</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic (ES Module) -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
