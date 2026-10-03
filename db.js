@@ -41,6 +41,7 @@ export function initDatabase(dbPath = 'data/leen_flowers.db') {
       careTips TEXT,
       inStock INTEGER DEFAULT 1,
       featured INTEGER DEFAULT 0,
+      images TEXT,
       createdAt TEXT NOT NULL
     );
 
@@ -55,6 +56,8 @@ export function initDatabase(dbPath = 'data/leen_flowers.db') {
       detailedAddress TEXT NOT NULL,
       deliveryDate TEXT,
       deliveryTime TEXT,
+      exactTime TEXT,
+      locationUrl TEXT,
       giftCardMessage TEXT,
       giftCardSign TEXT,
       orderNotes TEXT,
@@ -73,6 +76,16 @@ export function initDatabase(dbPath = 'data/leen_flowers.db') {
       updatedAt TEXT NOT NULL
     );
   `);
+
+  try {
+    dbInstance.exec('ALTER TABLE products ADD COLUMN images TEXT;');
+  } catch (_) {}
+  try {
+    dbInstance.exec('ALTER TABLE orders ADD COLUMN exactTime TEXT;');
+  } catch (_) {}
+  try {
+    dbInstance.exec('ALTER TABLE orders ADD COLUMN locationUrl TEXT;');
+  } catch (_) {}
 
   // 2. Auto-seed config if empty
   const configRow = dbInstance.prepare('SELECT id FROM config WHERE id = 1').get();
@@ -341,7 +354,8 @@ export const ProductsDb = {
     return getDb().prepare('SELECT * FROM products ORDER BY featured DESC, createdAt DESC').all().map(p => ({
       ...p,
       inStock: Boolean(p.inStock),
-      featured: Boolean(p.featured)
+      featured: Boolean(p.featured),
+      images: p.images ? JSON.parse(p.images) : (p.image ? [p.image] : [])
     }));
   },
   getById(id) {
@@ -350,7 +364,8 @@ export const ProductsDb = {
     return {
       ...p,
       inStock: Boolean(p.inStock),
-      featured: Boolean(p.featured)
+      featured: Boolean(p.featured),
+      images: p.images ? JSON.parse(p.images) : (p.image ? [p.image] : [])
     };
   },
   create(prod) {
@@ -429,16 +444,17 @@ export const OrdersDb = {
     const res = getDb().prepare(`
       INSERT INTO orders (
         orderNumber, buyerName, buyerPhone, recipientName, recipientPhone,
-        city, detailedAddress, deliveryDate, deliveryTime,
+        city, detailedAddress, deliveryDate, deliveryTime, exactTime, locationUrl,
         giftCardMessage, giftCardSign, orderNotes,
         items, subtotal, deliveryFee, total, status, createdAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       orderNumber, order.buyerName, order.buyerPhone,
       order.recipientName || order.buyerName,
       order.recipientPhone || order.buyerPhone,
       order.city, order.detailedAddress,
       order.deliveryDate || '', order.deliveryTime || '',
+      order.exactTime || '', order.locationUrl || '',
       order.giftCardMessage || '', order.giftCardSign || '',
       order.orderNotes || '', itemsJson,
       order.subtotal || 0, order.deliveryFee || 0, order.total || 0,

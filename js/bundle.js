@@ -278,7 +278,7 @@ const StoreConfig = {
 
   /**
  * Products Data Repository for Leen Flowers (متجر لين للزهور)
- * Ready to be migrated to a backend database in Phase 2
+ * Includes multi-image photo albums for each floral arrangement
  */
 
 const STORAGE_KEY_PRODUCTS = 'leen_flowers_products';
@@ -300,6 +300,11 @@ const initialProducts = [
     oldPrice: 30.0,
     badge: 'الأكثر طلباً ⭐',
     image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1548094891-c4969f667c49?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'تنسيق استثنائي من 25 جورية حمراء هولندية فاخرة مع أوراق الأوكالبتوس العطرية، مغلفة بطبقات الورق الحريري الأسود والأبيض وشريط ساتان عريض.',
     flowerType: 'جوري أحمر هولندي كلاسيكي درجة أولى + أوكالبتوس',
     flowerCount: '25 جورية طبيعية',
@@ -318,6 +323,10 @@ const initialProducts = [
     oldPrice: 42.0,
     badge: 'جديد فاخر ✨',
     image: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'بوكس هدايا دائري أنيق يجمع بين زهور البيبي روز، الليليوم الأبيض، ولمسات اللافندر الطبيعي مع كرت إهداء مخملي خاص.',
     flowerType: 'بيبي روز باستيل، ليليوم عاجي، سنبل لافندر عطري',
     flowerCount: 'تشكيلة كثيفة تضم أكثر من 30 برعماً وزهرة',
@@ -336,6 +345,10 @@ const initialProducts = [
     oldPrice: 50.0,
     badge: 'تصميم حصري 💎',
     image: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'فازة زجاجية أسطوانية فاخرة تحتوي على مزيج ساحر من أزهار التوليب الوردية والجوري الهولندي مع إضاءة خفية تضفي سحراً على المكان.',
     flowerType: 'توليب هولندي طبيعي وردي وجوري باودر',
     flowerCount: '20 زهرة توليب وجوري منتقاة بدقة',
@@ -353,7 +366,11 @@ const initialProducts = [
     price: 30.0,
     oldPrice: 35.0,
     badge: 'موسم التخرج 🎓',
-    image: 'https://images.unsplash.com/photo-1508615039623-a25605d2b022?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1508615039623-a2ed60631f2a?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1508615039623-a2ed60631f2a?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'باقة تخرج راقية بتدرجات الأبيض والأصفر والذهبي، مصممة خصيصاً مع مجسم قبعة تخرج صغيرة وشريط مطبوع بعبارات التهنئة.',
     flowerType: 'جوري أصفر وذهبي، زهور الجربيرا، ونبتة السوليداجو',
     flowerCount: '22 زهرة طبيعية',
@@ -371,7 +388,11 @@ const initialProducts = [
     price: 28.0,
     oldPrice: 32.0,
     badge: 'نقاء وهدوء 🤍',
-    image: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1563241527-3004b2968853?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1563241527-3004b2968853?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1546842931-886c185b4c8c?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'مزيج فاخر من الجوري الأبيض وزهور الجيبسوفيليا (نَفَس الطفل) بتغليف أبيض عاجي ناعم يُعبر عن أسمى معاني التقدير والنقاء.',
     flowerType: 'جوري أبيض ملكي وزهور الجيبسوفيليا الناعمة',
     flowerCount: '24 زهرة جوري محاطة بسحاب الجيبسوفيليا',
@@ -390,6 +411,10 @@ const initialProducts = [
     oldPrice: 48.0,
     badge: 'هدية متكاملة 🍫',
     image: 'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'صندوق مخملي أنيق على شكل قلب مقسوم لجانبين: جانب مليء بالورد الجوري الأحمر الفاخر، وجانب يضم تشكيلة شوكولاتة سويسرية فاخرة.',
     flowerType: 'جوري أحمر قاني مجدول بعناية',
     flowerCount: '18 إلى 20 زهرة جوري منتقاة بدقة',
@@ -408,6 +433,10 @@ const initialProducts = [
     oldPrice: 70.0,
     badge: 'مناسبات خاصة 🌟',
     image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'استاند عصري شفاف عالي الجودة بتنسيق زهور كثيف وراقي، مخصص لمداخل الحفلات واستقبال المواليد مع تخصيص عبارة الأكريليك حسب رغبتك.',
     flowerType: 'تشكيلة زهور هيدرانجيا، أوركيد، بيبي روز، وجوري',
     flowerCount: 'تنسيق كثيف فاخر (أكثر من 40 زهرة)',
@@ -426,6 +455,10 @@ const initialProducts = [
     oldPrice: 65.0,
     badge: 'أعراس 💍',
     image: 'https://images.unsplash.com/photo-1546842931-886c185b4c8c?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1546842931-886c185b4c8c?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1563241527-3004b2968853?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'مسكة عروس بتصميم كلاسيكي دائري فائق الدقة من الجوري الأوف وايت والكالّا ليلي مع مقبض ملفوف بالدانتيل واللؤلؤ.',
     flowerType: 'جوري أوف وايت مستورد، كالّا ليلي، أوراق فضية',
     flowerCount: '25 زهرة منسقة بدقة هندسية دائرية متناسقة',
@@ -443,7 +476,8 @@ function getProducts() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY_PRODUCTS);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch (e) {
       console.warn('Could not read products from localStorage', e);
@@ -465,7 +499,6 @@ function saveProducts(productsList) {
       console.warn('Could not save products to localStorage', e);
     }
   }
-  return productsList;
 }
 
 function resetDefaultProducts() {
@@ -689,6 +722,9 @@ class CartStore {
       address = '',
       deliveryDate = '',
       deliveryTime = '',
+      exactTime = '',
+      locationUrl = '',
+      isGiftCard = false,
       cardMessage = '',
       cardSign = '',
       notes = ''
@@ -718,19 +754,30 @@ class CartStore {
     msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
     msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
 
-    msg += `📍 *تفاصيل التوصيل:*\n`;
+    msg += `📍 *تفاصيل التوصيل والاستلام:*\n`;
     msg += `• المدينة / المنطقة: ${city || 'عمان'}\n`;
     msg += `• العنوان التفصيلي: ${address || 'سيتم التوضيح عبر الواتساب'}\n`;
-    msg += `• التاريخ المفضل: ${deliveryDate || 'في أقرب وقت'}\n`;
-    msg += `• الفترة: ${deliveryTime || 'خلال اليوم'}\n\n`;
+    if (locationUrl && locationUrl.trim()) {
+      msg += `• رابط الموقع الجغرافي: ${locationUrl.trim()}\n`;
+    }
+    msg += `• التاريخ المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
+    if (exactTime && exactTime.trim()) {
+      msg += `• الساعة المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
+    } else {
+      msg += `• الفترة: ${deliveryTime || 'خلال اليوم'}\n\n`;
+    }
 
-    if (cardMessage && cardMessage.trim()) {
-      msg += `💌 *بطاقة الإهداء:*\n`;
+    if ((isGiftCard || cardMessage) && cardMessage && cardMessage.trim()) {
+      msg += `💌 *بطاقة الإهداء (مرفقة مع الورد):*\n`;
       msg += `"${cardMessage.trim()}"\n`;
       if (cardSign && cardSign.trim()) {
         msg += `✍️ التوقيع: ${cardSign.trim()}\n`;
       }
       msg += `\n`;
+    } else if (isGiftCard) {
+      msg += `💌 *بطاقة الإهداء:* بطاقة فارغة لكتابة الإهداء يدوياً عند الاستلام\n\n`;
+    } else {
+      msg += `💌 *بطاقة الإهداء:* بدون كرت إهداء\n\n`;
     }
 
     msg += `🛍️ *تفاصيل المنتجات:*\n`;
@@ -1814,10 +1861,41 @@ function renderProductsGrid() {
 }
 
 /**
- * Product Details Modal System
+ * Scroll Lock Helper to prevent background scrolling when modals are open
+ */
+function lockBodyScroll() {
+  document.body.classList.add('modal-open');
+}
+
+function unlockBodyScroll() {
+  const activeModal = document.querySelector(
+    '.modal-overlay.active, .cart-drawer-overlay.active, .product-modal-overlay.active'
+  );
+  if (!activeModal) {
+    document.body.classList.remove('modal-open');
+  }
+}
+
+// Global ESC key to close open modals
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const activeElements = document.querySelectorAll(
+        '.modal-overlay.active, .cart-drawer-overlay.active, .product-modal-overlay.active'
+      );
+      activeElements.forEach(el => el.classList.remove('active'));
+      unlockBodyScroll();
+    }
+  });
+}
+
+/**
+ * Product Details Modal System with Album / Gallery Support
  */
 let currentModalProduct = null;
 let currentModalQty = 1;
+let currentModalImages = [];
+let currentModalImageIndex = 0;
 
 function initProductDetailsModal() {
   const overlay = document.getElementById('product-details-modal-overlay');
@@ -1827,13 +1905,33 @@ function initProductDetailsModal() {
   const qtyVal = document.getElementById('modal-qty-val');
   const addCartBtn = document.getElementById('modal-btn-add-cart');
   const directWaBtn = document.getElementById('modal-btn-direct-wa');
+  const prevBtn = document.getElementById('modal-gallery-prev');
+  const nextBtn = document.getElementById('modal-gallery-next');
+
+  function closeProductModal() {
+    if (overlay) overlay.classList.remove('active');
+    unlockBodyScroll();
+  }
 
   if (closeBtn && overlay) {
-    closeBtn.addEventListener('click', () => {
-      overlay.classList.remove('active');
-    });
+    closeBtn.addEventListener('click', closeProductModal);
     overlay.addEventListener('click', e => {
-      if (e.target === overlay) overlay.classList.remove('active');
+      if (e.target === overlay) closeProductModal();
+    });
+  }
+
+  // Gallery Navigation Buttons
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigateGallery(-1);
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigateGallery(1);
     });
   }
 
@@ -1855,7 +1953,7 @@ function initProductDetailsModal() {
       if (currentModalProduct) {
         CartManager.addItem(currentModalProduct, currentModalQty);
         showToast(`تمت إضافة (${currentModalQty}) من "${currentModalProduct.title}" إلى السلة 🌸`);
-        if (overlay) overlay.classList.remove('active');
+        closeProductModal();
       }
     });
   }
@@ -1884,6 +1982,36 @@ function initProductDetailsModal() {
   }
 }
 
+function navigateGallery(delta) {
+  if (!currentModalImages || currentModalImages.length <= 1) return;
+  currentModalImageIndex = (currentModalImageIndex + delta + currentModalImages.length) % currentModalImages.length;
+  updateGalleryDisplay();
+}
+
+function setGalleryIndex(index) {
+  if (!currentModalImages || index < 0 || index >= currentModalImages.length) return;
+  currentModalImageIndex = index;
+  updateGalleryDisplay();
+}
+
+function updateGalleryDisplay() {
+  const imgEl = document.getElementById('modal-img');
+  const thumbsContainer = document.getElementById('modal-gallery-thumbs');
+
+  if (imgEl && currentModalImages[currentModalImageIndex]) {
+    imgEl.src = currentModalImages[currentModalImageIndex];
+    if (currentModalProduct) {
+      imgEl.alt = `${currentModalProduct.title} - صورة ${currentModalImageIndex + 1}`;
+    }
+  }
+
+  if (thumbsContainer) {
+    thumbsContainer.querySelectorAll('.gallery-thumb-item').forEach((btn, idx) => {
+      btn.classList.toggle('active', idx === currentModalImageIndex);
+    });
+  }
+}
+
 function openProductModal(prod) {
   const overlay = document.getElementById('product-details-modal-overlay');
   if (!overlay || !prod) return;
@@ -1891,7 +2019,20 @@ function openProductModal(prod) {
   currentModalProduct = prod;
   currentModalQty = 1;
 
+  // Extract images array (support single or multiple photos album)
+  if (Array.isArray(prod.images) && prod.images.length > 0) {
+    currentModalImages = prod.images;
+  } else if (prod.image) {
+    currentModalImages = [prod.image];
+  } else {
+    currentModalImages = [];
+  }
+  currentModalImageIndex = 0;
+
   const imgEl = document.getElementById('modal-img');
+  const prevBtn = document.getElementById('modal-gallery-prev');
+  const nextBtn = document.getElementById('modal-gallery-next');
+  const thumbsContainer = document.getElementById('modal-gallery-thumbs');
   const badgeEl = document.getElementById('modal-badge');
   const titleEl = document.getElementById('modal-title');
   const priceEl = document.getElementById('modal-price');
@@ -1907,10 +2048,40 @@ function openProductModal(prod) {
   const specFresh = document.getElementById('modal-spec-freshness');
   const careDesc = document.getElementById('modal-care-desc');
 
-  if (imgEl) {
-    imgEl.src = prod.image;
-    imgEl.alt = prod.title;
+  // Configure album / gallery controls
+  if (currentModalImages.length > 1) {
+    if (prevBtn) prevBtn.style.display = 'flex';
+    if (nextBtn) nextBtn.style.display = 'flex';
+    if (thumbsContainer) {
+      thumbsContainer.style.display = 'flex';
+      thumbsContainer.innerHTML = currentModalImages
+        .map((imgUrl, idx) => `
+          <button type="button" class="gallery-thumb-item ${idx === 0 ? 'active' : ''}" data-thumb-idx="${idx}" aria-label="صورة ${idx + 1}">
+            <img src="${imgUrl}" alt="مصغرة ${idx + 1}" loading="lazy">
+          </button>
+        `)
+        .join('');
+
+      thumbsContainer.querySelectorAll('.gallery-thumb-item').forEach(thumbBtn => {
+        thumbBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(thumbBtn.getAttribute('data-thumb-idx'), 10);
+          setGalleryIndex(idx);
+        });
+      });
+    }
+  } else {
+    // Single image product: hide navigation arrows and thumbnails strip
+    if (prevBtn) prevBtn.style.display = 'none';
+    if (nextBtn) nextBtn.style.display = 'none';
+    if (thumbsContainer) {
+      thumbsContainer.style.display = 'none';
+      thumbsContainer.innerHTML = '';
+    }
   }
+
+  updateGalleryDisplay();
+
   if (badgeEl) {
     badgeEl.textContent = prod.badge || 'تنسيق فاخر 🌸';
     badgeEl.style.display = prod.badge ? 'inline-block' : 'none';
@@ -1936,6 +2107,7 @@ function openProductModal(prod) {
   if (careDesc) careDesc.textContent = prod.careTips || 'قص أطراف السيقان بزاوية 45 درجة، واستبدل الماء كل يومين وضع الباقة في مكان بارد بعيداً عن أشعة الشمس.';
 
   overlay.classList.add('active');
+  lockBodyScroll();
 }
 
 /**
@@ -2106,23 +2278,27 @@ function initCartDrawer() {
   CartManager.subscribe(updateCartUI);
   updateCartUI();
 
-  // Drawer Open/Close
+  // Drawer Open/Close with body scroll lock
   if (openBtn) {
     openBtn.addEventListener('click', () => {
       overlay.classList.add('active');
+      lockBodyScroll();
     });
   }
 
+  function closeCartDrawer() {
+    if (overlay) overlay.classList.remove('active');
+    unlockBodyScroll();
+  }
+
   if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      overlay.classList.remove('active');
-    });
+    closeBtn.addEventListener('click', closeCartDrawer);
   }
 
   if (overlay) {
     overlay.addEventListener('click', e => {
       if (e.target === overlay) {
-        overlay.classList.remove('active');
+        closeCartDrawer();
       }
     });
   }
@@ -2133,7 +2309,7 @@ function initCartDrawer() {
         showToast('يرجى إضافة زهور إلى السلة أولاً!');
         return;
       }
-      overlay.classList.remove('active');
+      closeCartDrawer();
       openCheckoutModal();
     });
   }
@@ -2150,6 +2326,7 @@ function openCheckoutModal() {
   }
   if (modalOverlay) {
     modalOverlay.classList.add('active');
+    lockBodyScroll();
   }
 }
 
@@ -2157,21 +2334,77 @@ function initCheckoutFlow() {
   const modalOverlay = document.getElementById('checkout-modal-overlay');
   const closeBtn = document.getElementById('close-checkout-btn');
   const form = document.getElementById('checkout-form');
+  const toggleGiftCard = document.getElementById('toggle-gift-card');
+  const giftCardBox = document.getElementById('gift-card-fields-box');
+  const giftCardMsg = document.getElementById('gift-card-message');
+  const giftCardSign = document.getElementById('gift-card-sign');
+  const btnGetLocation = document.getElementById('btn-get-location');
+  const locationInput = document.getElementById('delivery-location-url');
+
+  function closeCheckout() {
+    if (modalOverlay) modalOverlay.classList.remove('active');
+    unlockBodyScroll();
+  }
 
   if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      modalOverlay.classList.remove('active');
-    });
+    closeBtn.addEventListener('click', closeCheckout);
   }
 
   if (modalOverlay) {
     modalOverlay.addEventListener('click', e => {
       if (e.target === modalOverlay) {
-        modalOverlay.classList.remove('active');
+        closeCheckout();
       }
     });
   }
 
+  // 1. Gift Card Toggle Switch
+  if (toggleGiftCard && giftCardBox) {
+    toggleGiftCard.addEventListener('change', () => {
+      if (toggleGiftCard.checked) {
+        giftCardBox.style.display = 'block';
+        giftCardBox.classList.add('visible');
+        if (giftCardMsg) giftCardMsg.focus();
+      } else {
+        giftCardBox.style.display = 'none';
+        giftCardBox.classList.remove('visible');
+      }
+    });
+  }
+
+  // 2. Geolocation / GPS Button to populate Google Maps link
+  if (btnGetLocation && locationInput) {
+    btnGetLocation.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        showToast('خاصية تحديد الموقع الجغرافي غير مدعومة في متصفحك. يرجى لصق الرابط يدوياً.');
+        return;
+      }
+
+      btnGetLocation.disabled = true;
+      btnGetLocation.innerHTML = '<span>⏳ جاري تحديد موقعك...</span>';
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          const mapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
+          locationInput.value = mapsUrl;
+          btnGetLocation.disabled = false;
+          btnGetLocation.innerHTML = '<span>✓ تم تحديد الموقع</span>';
+          showToast('تم تحديد موقعك بدقة عبر GPS بنجاح 🎯');
+        },
+        (err) => {
+          btnGetLocation.disabled = false;
+          btnGetLocation.innerHTML = '<span>🎯 تحديد موقعي الحالي</span>';
+          console.warn('Geolocation error:', err.message);
+          showToast('تعذر جلب موقعك تلقائياً. يرجى لصق رابط خرائط جوجل يدوياً.');
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
+    });
+  }
+
+  // 3. Checkout Form Submission
   if (form) {
     form.addEventListener('submit', async e => {
       e.preventDefault();
@@ -2180,6 +2413,12 @@ function initCheckoutFlow() {
         showToast('السلة فارغة!');
         return;
       }
+
+      const isGift = toggleGiftCard ? toggleGiftCard.checked : false;
+      const exactTimeVal = document.getElementById('delivery-exact-time')
+        ? document.getElementById('delivery-exact-time').value
+        : '';
+      const locationUrlVal = locationInput ? locationInput.value.trim() : '';
 
       const orderDetails = {
         buyerName: document.getElementById('buyer-name').value.trim(),
@@ -2190,8 +2429,11 @@ function initCheckoutFlow() {
         address: document.getElementById('detailed-address').value.trim(),
         deliveryDate: document.getElementById('delivery-date').value,
         deliveryTime: document.getElementById('delivery-time').value,
-        cardMessage: document.getElementById('gift-card-message').value.trim(),
-        cardSign: document.getElementById('gift-card-sign').value.trim(),
+        exactTime: exactTimeVal,
+        locationUrl: locationUrlVal,
+        isGiftCard: isGift,
+        cardMessage: isGift && giftCardMsg ? giftCardMsg.value.trim() : '',
+        cardSign: isGift && giftCardSign ? giftCardSign.value.trim() : '',
         notes: document.getElementById('order-notes').value.trim()
       };
 
@@ -2207,6 +2449,8 @@ function initCheckoutFlow() {
           detailedAddress: orderDetails.address,
           deliveryDate: orderDetails.deliveryDate,
           deliveryTime: orderDetails.deliveryTime,
+          exactTime: orderDetails.exactTime,
+          locationUrl: orderDetails.locationUrl,
           giftCardMessage: orderDetails.cardMessage,
           giftCardSign: orderDetails.cardSign,
           orderNotes: orderDetails.notes,
@@ -2231,13 +2475,15 @@ function initCheckoutFlow() {
       // 2. Save order to local history as backup
       saveOrderToLocalHistory(orderDetails, CartManager.getItems(), CartManager.getSubtotal());
 
-      // 3. Generate WhatsApp Link with official order number
+      // 3. Generate WhatsApp Link with official order number, location, exact time, and card
       const targetPhone = StoreConfig.defaultWhatsApp;
       const waUrl = CartManager.generateWhatsAppOrderUrl(orderDetails, targetPhone);
 
       // 4. Close modal and clear cart
-      modalOverlay.classList.remove('active');
+      closeCheckout();
       form.reset();
+      if (toggleGiftCard) toggleGiftCard.checked = false;
+      if (giftCardBox) giftCardBox.style.display = 'none';
       CartManager.clear();
 
       const orderBadgeText = orderDetails.orderNumber ? ` رقم [${orderDetails.orderNumber}]` : '';

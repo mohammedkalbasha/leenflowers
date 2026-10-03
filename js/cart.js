@@ -112,6 +112,9 @@ class CartStore {
       address = '',
       deliveryDate = '',
       deliveryTime = '',
+      exactTime = '',
+      locationUrl = '',
+      isGiftCard = false,
       cardMessage = '',
       cardSign = '',
       notes = ''
@@ -141,19 +144,30 @@ class CartStore {
     msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
     msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
 
-    msg += `📍 *تفاصيل التوصيل:*\n`;
+    msg += `📍 *تفاصيل التوصيل والاستلام:*\n`;
     msg += `• المدينة / المنطقة: ${city || 'عمان'}\n`;
     msg += `• العنوان التفصيلي: ${address || 'سيتم التوضيح عبر الواتساب'}\n`;
-    msg += `• التاريخ المفضل: ${deliveryDate || 'في أقرب وقت'}\n`;
-    msg += `• الفترة: ${deliveryTime || 'خلال اليوم'}\n\n`;
+    if (locationUrl && locationUrl.trim()) {
+      msg += `• رابط الموقع الجغرافي: ${locationUrl.trim()}\n`;
+    }
+    msg += `• التاريخ المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
+    if (exactTime && exactTime.trim()) {
+      msg += `• الساعة المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
+    } else {
+      msg += `• الفترة: ${deliveryTime || 'خلال اليوم'}\n\n`;
+    }
 
-    if (cardMessage && cardMessage.trim()) {
-      msg += `💌 *بطاقة الإهداء:*\n`;
+    if ((isGiftCard || cardMessage) && cardMessage && cardMessage.trim()) {
+      msg += `💌 *بطاقة الإهداء (مرفقة مع الورد):*\n`;
       msg += `"${cardMessage.trim()}"\n`;
       if (cardSign && cardSign.trim()) {
         msg += `✍️ التوقيع: ${cardSign.trim()}\n`;
       }
       msg += `\n`;
+    } else if (isGiftCard) {
+      msg += `💌 *بطاقة الإهداء:* بطاقة فارغة لكتابة الإهداء يدوياً عند الاستلام\n\n`;
+    } else {
+      msg += `💌 *بطاقة الإهداء:* بدون كرت إهداء\n\n`;
     }
 
     msg += `🛍️ *تفاصيل المنتجات:*\n`;

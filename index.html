@@ -273,9 +273,16 @@
       </div>
 
       <div class="product-modal-body">
-        <!-- Gallery / Image -->
+        <!-- Gallery / Image Album -->
         <div class="product-modal-gallery">
-          <img src="" alt="" id="modal-img" class="product-modal-img">
+          <div class="gallery-main-wrap">
+            <img src="" alt="" id="modal-img" class="product-modal-img">
+            <button type="button" class="gallery-nav-btn prev" id="modal-gallery-prev" aria-label="الصورة السابقة">‹</button>
+            <button type="button" class="gallery-nav-btn next" id="modal-gallery-next" aria-label="الصورة التالية">›</button>
+          </div>
+          <div class="gallery-thumbnails-row" id="modal-gallery-thumbs">
+            <!-- Populated dynamically if multiple photos exist -->
+          </div>
         </div>
 
         <!-- Info & Actions -->
@@ -392,10 +399,10 @@
           </div>
         </div>
 
-        <!-- Section 3: Delivery Details -->
+        <!-- Section 3: Delivery & Exact Time & Location -->
         <div class="form-group-section">
           <div class="form-section-title">
-            <span>📍</span> موقع وموعد التوصيل
+            <span>📍</span> موقع وموعد الاستلام / التوصيل
           </div>
           <div class="form-row">
             <div class="form-field">
@@ -405,11 +412,16 @@
               </select>
             </div>
             <div class="form-field">
-              <label for="delivery-date">تاريخ التوصيل المطلوب <span class="req">*</span></label>
+              <label for="delivery-date">تاريخ الاستلام / التوصيل <span class="req">*</span></label>
               <input type="date" id="delivery-date" required>
             </div>
           </div>
+
           <div class="form-row">
+            <div class="form-field">
+              <label for="delivery-exact-time">الساعة المحددة للاستلام</label>
+              <input type="time" id="delivery-exact-time" value="18:00" title="حدد وقت التوصيل أو الاستلام بالساعة والدقيقة">
+            </div>
             <div class="form-field">
               <label for="delivery-time">الفترة الزمنية المفضلة</label>
               <select id="delivery-time">
@@ -419,25 +431,49 @@
                 <option value="في أقرب وقت ممكن">في أقرب وقت ممكن ⚡</option>
               </select>
             </div>
-            <div class="form-field">
-              <label for="detailed-address">العنوان التفصيلي <span class="req">*</span></label>
-              <input type="text" id="detailed-address" required placeholder="الشارع، اسم العمارة، رقم الشقة">
+          </div>
+
+          <div class="form-field">
+            <label for="detailed-address">العنوان التفصيلي <span class="req">*</span></label>
+            <input type="text" id="detailed-address" required placeholder="الشارع، اسم العمارة، رقم الشقة أو المعلم القريب">
+          </div>
+
+          <!-- Location (Google Maps link & GPS button) -->
+          <div class="form-field" style="margin-top:10px;">
+            <label for="delivery-location-url">📍 رابط الموقع / اللوكيشن (Google Maps)</label>
+            <div class="location-input-wrapper">
+              <input type="url" id="delivery-location-url" placeholder="ألصق رابط موقعك من خرائط جوجل أو اضغط تحديد موقعي">
+              <button type="button" class="btn-get-location" id="btn-get-location" title="تحديد موقعي الجغرافي تلقائياً عبر GPS">
+                <span>🎯 تحديد موقعي الحالي</span>
+              </button>
             </div>
+            <small style="color:var(--text-muted); font-size:0.78rem;">يصل لسائق التوصيل مباشرة لضمان الوصول بأسرع وقت</small>
           </div>
         </div>
 
-        <!-- Section 4: Personalized Gift Card -->
+        <!-- Section 4: Personalized Gift Card (Optional with Toggle Switch) -->
         <div class="form-group-section">
           <div class="form-section-title">
-            <span>💌</span> بطاقة الإهداء (مجاناً)
+            <span>💌</span> بطاقة الإهداء الخاصة
           </div>
-          <div class="form-field" style="margin-bottom:12px;">
-            <label for="gift-card-message">اكتب رسالتك لطباعتها في كرت الإهداء</label>
-            <textarea id="gift-card-message" class="gift-card-textarea" placeholder="اكتب مشاعرك هنا... مثلاً: كل عام وأنتِ الأجمل، دمتِ لي نوراً وسعادة 🌸"></textarea>
+          
+          <div class="gift-card-toggle-row">
+            <label class="toggle-switch-label" for="toggle-gift-card">
+              <input type="checkbox" id="toggle-gift-card" class="toggle-checkbox">
+              <span class="toggle-slider"></span>
+              <span>إضافة كرت إهداء فاخر ومجاني مع الباقة 🎁</span>
+            </label>
           </div>
-          <div class="form-field">
-            <label for="gift-card-sign">التوقيع على الكرت</label>
-            <input type="text" id="gift-card-sign" placeholder="مثال: من محبك / فاعل خير / اسمك">
+
+          <div id="gift-card-fields-box" class="gift-card-expandable-box" style="display: none;">
+            <div class="form-field" style="margin-bottom:12px;">
+              <label for="gift-card-message">اكتب رسالتك لطباعتها في كرت الإهداء</label>
+              <textarea id="gift-card-message" class="gift-card-textarea" placeholder="اكتب مشاعرك هنا... مثلاً: كل عام وأنتِ الأجمل، دمتِ لي نوراً وسعادة 🌸"></textarea>
+            </div>
+            <div class="form-field">
+              <label for="gift-card-sign">التوقيع على الكرت</label>
+              <input type="text" id="gift-card-sign" placeholder="مثال: من محبك / فاعل خير / اسمك">
+            </div>
           </div>
         </div>
 

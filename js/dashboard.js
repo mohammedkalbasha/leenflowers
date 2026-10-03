@@ -498,6 +498,7 @@ function initPrintModal() {
 
   function closeModal() {
     if (modal) modal.classList.remove('active');
+    document.body.classList.remove('modal-open');
   }
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -514,6 +515,8 @@ function openPrintModal(order) {
   const modal = document.getElementById('print-modal-overlay');
   const voucherEl = document.getElementById('printable-voucher');
   if (!modal || !voucherEl) return;
+
+  document.body.classList.add('modal-open');
 
   const itemsList = Array.isArray(order.items) ? order.items : [];
   const itemsRows = itemsList.map(i => `
@@ -566,13 +569,14 @@ function openPrintModal(order) {
             <p>الهاتف: <strong>${order.recipientPhone || order.buyerPhone}</strong></p>
             <p>المدينة / المنطقة: <strong>${order.city}</strong></p>
             <p>العنوان التفصيلي: ${order.detailedAddress}</p>
+            ${order.locationUrl ? `<p>رابط اللوكيشن: <a href="${order.locationUrl}" target="_blank" rel="noopener" style="color:#0284c7; text-decoration:underline; font-weight:600;">📍 فتح موقع خرائط Google</a></p>` : ''}
           </div>
 
           <div class="slip-info-group">
             <h4>⏰ الموعد وتفاصيل المشتري</h4>
             <p>المشتري: ${order.buyerName} (${order.buyerPhone})</p>
             <p>التاريخ المطلوب: <strong>${order.deliveryDate || 'اليوم'}</strong></p>
-            <p>الفترة المفضلة: <strong>${order.deliveryTime || 'مساءً'}</strong></p>
+            <p>الساعة المحددة: <strong>${order.exactTime ? order.exactTime + ' (' + (order.deliveryTime || 'مساءً') + ')' : (order.deliveryTime || 'مساءً')}</strong></p>
             <p>ملاحظات التجهيز: <em style="color:#c85a70;">${order.orderNotes || 'لا توجد'}</em></p>
           </div>
         </div>

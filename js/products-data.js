@@ -1,6 +1,6 @@
 /**
  * Products Data Repository for Leen Flowers (متجر لين للزهور)
- * Ready to be migrated to a backend database in Phase 2
+ * Includes multi-image photo albums for each floral arrangement
  */
 
 const STORAGE_KEY_PRODUCTS = 'leen_flowers_products';
@@ -22,6 +22,11 @@ export const initialProducts = [
     oldPrice: 30.0,
     badge: 'الأكثر طلباً ⭐',
     image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1548094891-c4969f667c49?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'تنسيق استثنائي من 25 جورية حمراء هولندية فاخرة مع أوراق الأوكالبتوس العطرية، مغلفة بطبقات الورق الحريري الأسود والأبيض وشريط ساتان عريض.',
     flowerType: 'جوري أحمر هولندي كلاسيكي درجة أولى + أوكالبتوس',
     flowerCount: '25 جورية طبيعية',
@@ -40,6 +45,10 @@ export const initialProducts = [
     oldPrice: 42.0,
     badge: 'جديد فاخر ✨',
     image: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'بوكس هدايا دائري أنيق يجمع بين زهور البيبي روز، الليليوم الأبيض، ولمسات اللافندر الطبيعي مع كرت إهداء مخملي خاص.',
     flowerType: 'بيبي روز باستيل، ليليوم عاجي، سنبل لافندر عطري',
     flowerCount: 'تشكيلة كثيفة تضم أكثر من 30 برعماً وزهرة',
@@ -58,6 +67,10 @@ export const initialProducts = [
     oldPrice: 50.0,
     badge: 'تصميم حصري 💎',
     image: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'فازة زجاجية أسطوانية فاخرة تحتوي على مزيج ساحر من أزهار التوليب الوردية والجوري الهولندي مع إضاءة خفية تضفي سحراً على المكان.',
     flowerType: 'توليب هولندي طبيعي وردي وجوري باودر',
     flowerCount: '20 زهرة توليب وجوري منتقاة بدقة',
@@ -75,7 +88,11 @@ export const initialProducts = [
     price: 30.0,
     oldPrice: 35.0,
     badge: 'موسم التخرج 🎓',
-    image: 'https://images.unsplash.com/photo-1508615039623-a25605d2b022?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1508615039623-a2ed60631f2a?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1508615039623-a2ed60631f2a?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'باقة تخرج راقية بتدرجات الأبيض والأصفر والذهبي، مصممة خصيصاً مع مجسم قبعة تخرج صغيرة وشريط مطبوع بعبارات التهنئة.',
     flowerType: 'جوري أصفر وذهبي، زهور الجربيرا، ونبتة السوليداجو',
     flowerCount: '22 زهرة طبيعية',
@@ -93,7 +110,11 @@ export const initialProducts = [
     price: 28.0,
     oldPrice: 32.0,
     badge: 'نقاء وهدوء 🤍',
-    image: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1563241527-3004b2968853?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1563241527-3004b2968853?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1546842931-886c185b4c8c?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'مزيج فاخر من الجوري الأبيض وزهور الجيبسوفيليا (نَفَس الطفل) بتغليف أبيض عاجي ناعم يُعبر عن أسمى معاني التقدير والنقاء.',
     flowerType: 'جوري أبيض ملكي وزهور الجيبسوفيليا الناعمة',
     flowerCount: '24 زهرة جوري محاطة بسحاب الجيبسوفيليا',
@@ -112,6 +133,10 @@ export const initialProducts = [
     oldPrice: 48.0,
     badge: 'هدية متكاملة 🍫',
     image: 'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'صندوق مخملي أنيق على شكل قلب مقسوم لجانبين: جانب مليء بالورد الجوري الأحمر الفاخر، وجانب يضم تشكيلة شوكولاتة سويسرية فاخرة.',
     flowerType: 'جوري أحمر قاني مجدول بعناية',
     flowerCount: '18 إلى 20 زهرة جوري منتقاة بدقة',
@@ -130,6 +155,10 @@ export const initialProducts = [
     oldPrice: 70.0,
     badge: 'مناسبات خاصة 🌟',
     image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'استاند عصري شفاف عالي الجودة بتنسيق زهور كثيف وراقي، مخصص لمداخل الحفلات واستقبال المواليد مع تخصيص عبارة الأكريليك حسب رغبتك.',
     flowerType: 'تشكيلة زهور هيدرانجيا، أوركيد، بيبي روز، وجوري',
     flowerCount: 'تنسيق كثيف فاخر (أكثر من 40 زهرة)',
@@ -148,6 +177,10 @@ export const initialProducts = [
     oldPrice: 65.0,
     badge: 'أعراس 💍',
     image: 'https://images.unsplash.com/photo-1546842931-886c185b4c8c?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1546842931-886c185b4c8c?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1563241527-3004b2968853?auto=format&fit=crop&w=800&q=80'
+    ],
     description: 'مسكة عروس بتصميم كلاسيكي دائري فائق الدقة من الجوري الأوف وايت والكالّا ليلي مع مقبض ملفوف بالدانتيل واللؤلؤ.',
     flowerType: 'جوري أوف وايت مستورد، كالّا ليلي، أوراق فضية',
     flowerCount: '25 زهرة منسقة بدقة هندسية دائرية متناسقة',
@@ -165,7 +198,8 @@ export function getProducts() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY_PRODUCTS);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch (e) {
       console.warn('Could not read products from localStorage', e);
@@ -187,7 +221,6 @@ export function saveProducts(productsList) {
       console.warn('Could not save products to localStorage', e);
     }
   }
-  return productsList;
 }
 
 export function resetDefaultProducts() {
