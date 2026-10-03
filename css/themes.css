@@ -23,6 +23,7 @@
   --primary: #c85a70;
   --primary-hover: #b04359;
   --primary-glow: rgba(200, 90, 112, 0.25);
+  --primary-contrast: #ffffff;
   
   --secondary: #d4af37; /* Champagne Gold */
   --secondary-hover: #b89628;
@@ -72,6 +73,7 @@
   --primary: #755bb4;
   --primary-hover: #60469e;
   --primary-glow: rgba(117, 91, 180, 0.25);
+  --primary-contrast: #ffffff;
   
   --secondary: #3b8465; /* Botanical Sage */
   --secondary-hover: #2e684f;
@@ -121,6 +123,7 @@
   --primary: #e5b85e; /* Radiant Luxury Gold */
   --primary-hover: #f3c975;
   --primary-glow: rgba(229, 184, 94, 0.35);
+  --primary-contrast: #0b0e14;
   
   --secondary: #ff5277; /* Crimson Rose pop */
   --secondary-hover: #e03b5f;

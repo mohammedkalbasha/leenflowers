@@ -1425,12 +1425,14 @@ function renderProductsGrid() {
               <span class="price-main">${p.price.toFixed(2)} د.أ</span>
               ${p.oldPrice ? `<span class="price-old">${p.oldPrice.toFixed(2)} د.أ</span>` : ''}
             </div>
-            <div style="display:flex; gap:6px;">
-              <button type="button" class="card-view-btn" data-action="view-details" data-id="${p.id}" title="معاينة التفاصيل">
-                🔍 التفاصيل
+            <div class="card-action-btns">
+              <button type="button" class="btn-card-details" data-action="view-details" data-id="${p.id}" title="عرض تفاصيل ومواصفات الباقة">
+                <span class="btn-icon">👁️</span>
+                <span class="btn-text">التفاصيل</span>
               </button>
-              <button type="button" class="btn-add-cart" data-action="add-to-cart" data-id="${p.id}" title="إضافة سريعة للسلة">
-                <span>+</span> 🛒
+              <button type="button" class="btn-card-add" data-action="add-to-cart" data-id="${p.id}" title="إضافة سريعة للسلة">
+                <span class="btn-icon">🛒</span>
+                <span class="btn-text">أضف</span>
               </button>
             </div>
           </div>
