@@ -2633,7 +2633,8 @@ body.modal-open {
   }
 }
 
-/* Pickup Recipient Sub-Selector (Self vs Other) */
+/* Delivery Recipient Sub-Selector (Self vs Other / Gift) */
+.delivery-recipient-selector,
 .pickup-recipient-selector {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2641,6 +2642,7 @@ body.modal-open {
   margin-top: 8px;
 }
 
+.delivery-suboption-card,
 .pickup-suboption-card {
   display: flex;
   align-items: center;
@@ -2654,18 +2656,21 @@ body.modal-open {
   user-select: none;
 }
 
+.delivery-suboption-card input[type="radio"],
 .pickup-suboption-card input[type="radio"] {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
+.delivery-suboption-card .subopt-icon,
 .pickup-suboption-card .subopt-icon {
   font-size: 1.3rem;
   line-height: 1;
   flex-shrink: 0;
 }
 
+.delivery-suboption-card .subopt-text,
 .pickup-suboption-card .subopt-text {
   display: flex;
   flex-direction: column;
@@ -2673,33 +2678,39 @@ body.modal-open {
   text-align: right;
 }
 
+.delivery-suboption-card .subopt-text strong,
 .pickup-suboption-card .subopt-text strong {
   font-size: 0.88rem;
   color: var(--text-main);
   font-weight: 700;
 }
 
+.delivery-suboption-card .subopt-text span,
 .pickup-suboption-card .subopt-text span {
   font-size: 0.72rem;
   color: var(--text-muted);
 }
 
+.delivery-suboption-card:hover,
 .pickup-suboption-card:hover {
   border-color: var(--primary);
   background: var(--card-bg);
 }
 
+.delivery-suboption-card.active,
 .pickup-suboption-card.active {
   border-color: var(--primary);
   background: var(--card-bg);
   box-shadow: 0 2px 10px rgba(224, 86, 126, 0.12);
 }
 
+.delivery-suboption-card.active .subopt-text strong,
 .pickup-suboption-card.active .subopt-text strong {
   color: var(--primary);
 }
 
 @media (max-width: 600px) {
+  .delivery-recipient-selector,
   .pickup-recipient-selector {
     grid-template-columns: 1fr;
   }

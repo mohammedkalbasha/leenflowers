@@ -147,14 +147,6 @@ class CartStore {
     if (isPickup) {
       msg += `🏬 *طريقة وموعد الاستلام:*\n`;
       msg += `• نوع الطلب: استلام من المحل (الفرع الرئيسي) 🏬\n`;
-      if (details.pickupSubmode === 'other' || (recipientName && recipientName !== buyerName)) {
-        msg += `• المستلم في الفرع (إهداء لشخص آخر): 🎁 ${recipientName}\n`;
-        if (recipientPhone && recipientPhone !== buyerPhone) {
-          msg += `• هاتف المستلم: ${recipientPhone}\n`;
-        }
-      } else {
-        msg += `• المستلم: المشتري نفسه (${buyerName}) 🙋‍♂️\n`;
-      }
       msg += `• تاريخ الاستلام المطلوب: ${deliveryDate || 'اليوم'}\n`;
       if (exactTime && exactTime.trim()) {
         msg += `• ساعة الاستلام المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
@@ -162,9 +154,13 @@ class CartStore {
         msg += `• فترة الاستلام: ${deliveryTime || 'خلال ساعات الدوام'}\n\n`;
       }
     } else {
-      msg += `🎁 *بيانات المستلم (المرسل إليه):*\n`;
-      msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
-      msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
+      if (details.deliveryRecipientType === 'other' || (recipientName && recipientName !== buyerName)) {
+        msg += `🎁 *بيانات المستلم (إهداء لشخص آخر):*\n`;
+        msg += `• اسم المستلم: ${recipientName}\n`;
+        msg += `• هاتف المستلم: ${recipientPhone || 'غير محدد'}\n\n`;
+      } else {
+        msg += `🏠 *المستلم:* التوصيل للمشتري نفسه (${buyerName})\n\n`;
+      }
 
       msg += `📍 *تفاصيل التوصيل إلى العنوان:*\n`;
       msg += `• نوع الطلب: توصيل إلى العنوان 🚗\n`;

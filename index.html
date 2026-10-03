@@ -409,71 +409,58 @@
           </div>
         </div>
 
-        <!-- 3A. Pickup Recipient Sub-Option (Only shown when Pickup is chosen) -->
+        <!-- 3A. Store Pickup Information (Clean, direct & zero extra clutter) -->
         <div class="form-group-section" id="pickup-options-section" style="display:none;">
-          <div class="form-section-title">
-            <span>🎁</span> لمن هذا الطلب؟
-          </div>
-          <div class="pickup-recipient-selector">
-            <label class="pickup-suboption-card active" id="pickup-for-self-label">
-              <input type="radio" name="pickup-recipient-type" id="pickup-for-self" value="self" checked>
-              <span class="subopt-icon">🙋‍♂️</span>
-              <div class="subopt-text">
-                <strong>لي شخصياً (أنا سأستلم)</strong>
-                <span>نعتمد بياناتك أعلاه لتسليمك الباقة مباشرة</span>
-              </div>
-            </label>
-            <label class="pickup-suboption-card" id="pickup-for-other-label">
-              <input type="radio" name="pickup-recipient-type" id="pickup-for-other" value="other">
-              <span class="subopt-icon">💐</span>
-              <div class="subopt-text">
-                <strong>إهداء لشخص آخر</strong>
-                <span>شخص آخر سيستلم أو إهداء خاص</span>
-              </div>
-            </label>
-          </div>
-
-          <!-- Pickup Recipient Details (Only shown if "other" is selected) -->
-          <div id="pickup-other-details" style="display:none; margin-top:14px;">
-            <div class="form-row">
-              <div class="form-field">
-                <label for="pickup-recipient-name">اسم الشخص المستلم <span class="req">*</span></label>
-                <input type="text" id="pickup-recipient-name" placeholder="اسم من سيستلم الباقة من الفرع">
-              </div>
-              <div class="form-field">
-                <label for="pickup-recipient-phone">رقم هاتف المستلم</label>
-                <input type="tel" id="pickup-recipient-phone" placeholder="للتأكيد معه عند وصوله للمحل">
-              </div>
-            </div>
-          </div>
-
-          <!-- Store Pickup Information Box -->
-          <div id="pickup-store-info" class="pickup-store-info-box" style="margin-top:14px;">
+          <div class="pickup-store-info-box" style="margin-top:0;">
             <div class="store-badge">📍 موقع فرع الاستلام المعتمد</div>
             <h4>متجر لين للزهور - Leen Flowers</h4>
             <p><strong>العنوان:</strong> عمان - شمال عمان، الجبيهة / بالقرب من دوار المنهل والجامعة الأردنية</p>
             <p><strong>ساعات العمل والاستلام:</strong> يومياً من الساعة 10:00 صباحاً حتى 11:00 مساءً</p>
-            <p><strong>تجهيز الباقة:</strong> سنقوم بتنسيق الباقة لتكون في ذروة نضارتها وجاهزة فور وصولك بالموعد المحدد 🌸</p>
+            <p><strong>تجهيز الباقة:</strong> سنقوم بتجهيز وتنسيق باقتك لتكون في أبهى نضارة وجاهزة فور وصولك بالموعد المحدد 🌸</p>
             <a href="https://maps.google.com/?q=32.0200,35.8700" target="_blank" rel="noopener" class="btn-store-map-link">
               <span>🗺️ فتح موقع المحل على خرائط Google</span>
             </a>
           </div>
         </div>
 
-        <!-- 3B. Delivery Recipient & Address (Only shown when Delivery is chosen) -->
+        <!-- 3B. Delivery Options: (Self vs Gift to Other) & Address -->
         <div id="delivery-section-wrap">
+          <!-- Recipient Selector for Delivery -->
           <div class="form-group-section">
             <div class="form-section-title">
-              <span>🎁</span> بيانات المستلم (المرسل إليه)
+              <span>🎁</span> لمن هذا التوصيل؟
             </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label for="recipient-name">اسم المستلم</label>
-                <input type="text" id="recipient-name" placeholder="اتركه فارغاً إذا كان التوصيل لك شخصياً">
-              </div>
-              <div class="form-field">
-                <label for="recipient-phone">رقم هاتف المستلم</label>
-                <input type="tel" id="recipient-phone" placeholder="للتنسيق مع المستلم وقت وصول السائق">
+            <div class="delivery-recipient-selector">
+              <label class="delivery-suboption-card active" id="delivery-for-self-label">
+                <input type="radio" name="delivery-recipient-type" id="delivery-for-self" value="self" checked>
+                <span class="subopt-icon">🏠</span>
+                <div class="subopt-text">
+                  <strong>التوصيل لي شخصياً</strong>
+                  <span>سائق التوصيل سيتواصل معك مباشرة</span>
+                </div>
+              </label>
+
+              <label class="delivery-suboption-card" id="delivery-for-other-label">
+                <input type="radio" name="delivery-recipient-type" id="delivery-for-other" value="other">
+                <span class="subopt-icon">🎁</span>
+                <div class="subopt-text">
+                  <strong>إهداء لشخص آخر</strong>
+                  <span>مفاجأة أو هدية لشخص عزيز</span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Recipient Name & Phone (Only shown if "other" is selected) -->
+            <div id="delivery-other-details" style="display:none; margin-top:14px;">
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="recipient-name">اسم الشخص المستلم <span class="req">*</span></label>
+                  <input type="text" id="recipient-name" placeholder="اسم من سيستلم الباقة">
+                </div>
+                <div class="form-field">
+                  <label for="recipient-phone">رقم هاتف المستلم <span class="req">*</span></label>
+                  <input type="tel" id="recipient-phone" placeholder="للتنسيق معه وقت وصول السائق">
+                </div>
               </div>
             </div>
           </div>

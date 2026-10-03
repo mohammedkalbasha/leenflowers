@@ -757,14 +757,6 @@ class CartStore {
     if (isPickup) {
       msg += `🏬 *طريقة وموعد الاستلام:*\n`;
       msg += `• نوع الطلب: استلام من المحل (الفرع الرئيسي) 🏬\n`;
-      if (details.pickupSubmode === 'other' || (recipientName && recipientName !== buyerName)) {
-        msg += `• المستلم في الفرع (إهداء لشخص آخر): 🎁 ${recipientName}\n`;
-        if (recipientPhone && recipientPhone !== buyerPhone) {
-          msg += `• هاتف المستلم: ${recipientPhone}\n`;
-        }
-      } else {
-        msg += `• المستلم: المشتري نفسه (${buyerName}) 🙋‍♂️\n`;
-      }
       msg += `• تاريخ الاستلام المطلوب: ${deliveryDate || 'اليوم'}\n`;
       if (exactTime && exactTime.trim()) {
         msg += `• ساعة الاستلام المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
@@ -772,9 +764,13 @@ class CartStore {
         msg += `• فترة الاستلام: ${deliveryTime || 'خلال ساعات الدوام'}\n\n`;
       }
     } else {
-      msg += `🎁 *بيانات المستلم (المرسل إليه):*\n`;
-      msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
-      msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
+      if (details.deliveryRecipientType === 'other' || (recipientName && recipientName !== buyerName)) {
+        msg += `🎁 *بيانات المستلم (إهداء لشخص آخر):*\n`;
+        msg += `• اسم المستلم: ${recipientName}\n`;
+        msg += `• هاتف المستلم: ${recipientPhone || 'غير محدد'}\n\n`;
+      } else {
+        msg += `🏠 *المستلم:* التوصيل للمشتري نفسه (${buyerName})\n\n`;
+      }
 
       msg += `📍 *تفاصيل التوصيل إلى العنوان:*\n`;
       msg += `• نوع الطلب: توصيل إلى العنوان 🚗\n`;
@@ -2396,57 +2392,57 @@ function initCheckoutFlow() {
   const optionPickupLabel = document.getElementById('option-pickup-label');
   const deliverySectionWrap = document.getElementById('delivery-section-wrap');
   const pickupOptionsSection = document.getElementById('pickup-options-section');
-  const pickupForSelfRadio = document.getElementById('pickup-for-self');
-  const pickupForOtherRadio = document.getElementById('pickup-for-other');
-  const pickupForSelfLabel = document.getElementById('pickup-for-self-label');
-  const pickupForOtherLabel = document.getElementById('pickup-for-other-label');
-  const pickupOtherDetails = document.getElementById('pickup-other-details');
-  const pickupRecipientName = document.getElementById('pickup-recipient-name');
-  const pickupRecipientPhone = document.getElementById('pickup-recipient-phone');
+  const deliveryForSelfRadio = document.getElementById('delivery-for-self');
+  const deliveryForOtherRadio = document.getElementById('delivery-for-other');
+  const deliveryForSelfLabel = document.getElementById('delivery-for-self-label');
+  const deliveryForOtherLabel = document.getElementById('delivery-for-other-label');
+  const deliveryOtherDetails = document.getElementById('delivery-other-details');
+  const recipientName = document.getElementById('recipient-name');
+  const recipientPhone = document.getElementById('recipient-phone');
 
   const citySelect = document.getElementById('city-select');
   const detailedAddress = document.getElementById('detailed-address');
   const labelDeliveryDate = document.getElementById('label-delivery-date');
   const labelDeliveryTime = document.getElementById('label-delivery-time');
 
-  let currentPickupRecipient = 'self'; // 'self' or 'other'
+  let currentDeliveryRecipient = 'self'; // 'self' or 'other'
 
-  function setPickupRecipient(submode) {
-    currentPickupRecipient = submode;
+  function setDeliveryRecipient(submode) {
+    currentDeliveryRecipient = submode;
     const isOther = submode === 'other';
 
-    if (pickupForSelfLabel && pickupForOtherLabel) {
+    if (deliveryForSelfLabel && deliveryForOtherLabel) {
       if (isOther) {
-        pickupForOtherLabel.classList.add('active');
-        pickupForSelfLabel.classList.remove('active');
-        if (pickupForOtherRadio) pickupForOtherRadio.checked = true;
+        deliveryForOtherLabel.classList.add('active');
+        deliveryForSelfLabel.classList.remove('active');
+        if (deliveryForOtherRadio) deliveryForOtherRadio.checked = true;
       } else {
-        pickupForSelfLabel.classList.add('active');
-        pickupForOtherLabel.classList.remove('active');
-        if (pickupForSelfRadio) pickupForSelfRadio.checked = true;
+        deliveryForSelfLabel.classList.add('active');
+        deliveryForOtherLabel.classList.remove('active');
+        if (deliveryForSelfRadio) deliveryForSelfRadio.checked = true;
       }
     }
 
-    if (pickupOtherDetails) {
-      pickupOtherDetails.style.display = isOther ? 'block' : 'none';
+    if (deliveryOtherDetails) {
+      deliveryOtherDetails.style.display = isOther ? 'block' : 'none';
     }
-    if (pickupRecipientName) {
-      pickupRecipientName.required = isOther;
-      if (isOther) pickupRecipientName.focus();
+    if (recipientName) {
+      recipientName.required = isOther;
+      if (isOther) recipientName.focus();
     }
   }
 
-  if (pickupForSelfRadio) {
-    pickupForSelfRadio.addEventListener('change', () => setPickupRecipient('self'));
+  if (deliveryForSelfRadio) {
+    deliveryForSelfRadio.addEventListener('change', () => setDeliveryRecipient('self'));
   }
-  if (pickupForOtherRadio) {
-    pickupForOtherRadio.addEventListener('change', () => setPickupRecipient('other'));
+  if (deliveryForOtherRadio) {
+    deliveryForOtherRadio.addEventListener('change', () => setDeliveryRecipient('other'));
   }
-  if (pickupForSelfLabel) {
-    pickupForSelfLabel.addEventListener('click', () => setPickupRecipient('self'));
+  if (deliveryForSelfLabel) {
+    deliveryForSelfLabel.addEventListener('click', () => setDeliveryRecipient('self'));
   }
-  if (pickupForOtherLabel) {
-    pickupForOtherLabel.addEventListener('click', () => setPickupRecipient('other'));
+  if (deliveryForOtherLabel) {
+    deliveryForOtherLabel.addEventListener('click', () => setDeliveryRecipient('other'));
   }
 
   function setFulfillmentMode(mode) {
@@ -2476,9 +2472,9 @@ function initCheckoutFlow() {
     }
 
     if (isPickup) {
-      setPickupRecipient(currentPickupRecipient);
+      if (recipientName) recipientName.required = false;
     } else {
-      if (pickupRecipientName) pickupRecipientName.required = false;
+      setDeliveryRecipient(currentDeliveryRecipient);
     }
 
     if (labelDeliveryDate) {
@@ -2595,18 +2591,16 @@ function initCheckoutFlow() {
       let recipientPhoneVal = buyerPhoneVal;
 
       if (isPickup) {
-        if (currentPickupRecipient === 'other') {
-          recipientNameVal = (pickupRecipientName && pickupRecipientName.value.trim()) || buyerNameVal;
-          recipientPhoneVal = (pickupRecipientPhone && pickupRecipientPhone.value.trim()) || buyerPhoneVal;
+        recipientNameVal = buyerNameVal;
+        recipientPhoneVal = buyerPhoneVal;
+      } else {
+        if (currentDeliveryRecipient === 'other') {
+          recipientNameVal = (recipientName && recipientName.value.trim()) || buyerNameVal;
+          recipientPhoneVal = (recipientPhone && recipientPhone.value.trim()) || buyerPhoneVal;
         } else {
           recipientNameVal = buyerNameVal;
           recipientPhoneVal = buyerPhoneVal;
         }
-      } else {
-        const delivRecipName = document.getElementById('recipient-name');
-        const delivRecipPhone = document.getElementById('recipient-phone');
-        recipientNameVal = (delivRecipName && delivRecipName.value.trim()) || buyerNameVal;
-        recipientPhoneVal = (delivRecipPhone && delivRecipPhone.value.trim()) || buyerPhoneVal;
       }
 
       const orderDetails = {
@@ -2615,7 +2609,7 @@ function initCheckoutFlow() {
         recipientName: recipientNameVal,
         recipientPhone: recipientPhoneVal,
         fulfillmentType: currentFulfillmentType,
-        pickupSubmode: isPickup ? currentPickupRecipient : null,
+        deliveryRecipientType: isPickup ? null : currentDeliveryRecipient,
         city: isPickup ? 'عمان - استلام من الفرع' : (citySelect ? citySelect.value : 'عمان'),
         address: isPickup ? 'استلام شخصي من المحل (الفرع الرئيسي - الجبيهة)' : (detailedAddress ? detailedAddress.value.trim() : ''),
         deliveryDate: document.getElementById('delivery-date').value,
