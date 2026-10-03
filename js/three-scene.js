@@ -1,313 +1,375 @@
 /**
- * Interactive 3D Flower Scene for Leen Flowers (متجر لين للزهور)
- * Built with Three.js (Procedural Velvet Rose, Golden Accents, Drifting Petal Particles)
+ * Interactive 3D Luxury Flower Bouquet & Petals Scene for Leen Flowers (متجر لين للزهور)
+ * High compatibility (WebGL standard materials, mobile-responsive, zero CORS issues)
  */
 
 export function initThreeFlowerScene(containerId) {
   const container = document.getElementById(containerId);
-  if (!container) {
-    console.warn(`Container #${containerId} not found.`);
-    return null;
-  }
+  if (!container) return null;
 
-  // Ensure Three.js is available
   if (typeof THREE === 'undefined') {
-    console.warn('Three.js is not loaded globally.');
+    console.warn('Three.js is not loaded.');
+    container.innerHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding:20px; color:var(--text-muted);">
+        <div style="font-size:3.5rem; margin-bottom:10px;">🌸</div>
+        <h4 style="color:var(--text-main);">باقة ورد لين للزهور ثلاثية الأبعاد</h4>
+        <p style="font-size:0.85rem;">زهور طبيعية منسقة بحب وإتقان</p>
+      </div>
+    `;
     return null;
   }
 
-  // Scene & Camera
+  // Determine container dimensions safely
+  let width = container.clientWidth || container.offsetWidth || 420;
+  let height = container.clientHeight || container.offsetHeight || 420;
+  if (width < 100) width = 420;
+  if (height < 100) height = 420;
+
+  // Scene setup
   const scene = new THREE.Scene();
-  const width = container.clientWidth || 400;
-  const height = container.clientHeight || 400;
-
   const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-  camera.position.set(0, 1.2, 5.5);
+  camera.position.set(0, 0.8, 5.2);
 
-  // Renderer with High DPI support
-  const renderer = new THREE.WebGLRenderer({
-    alpha: true,
-    antialias: true,
-    powerPreference: 'high-performance'
-  });
+  // Renderer
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+      powerPreference: 'default'
+    });
+  } catch (e) {
+    console.error('WebGL initialization failed', e);
+    return null;
+  }
+
   renderer.setSize(width, height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   container.innerHTML = '';
   container.appendChild(renderer.domElement);
-
-  // Group that holds the entire flower
-  const flowerGroup = new THREE.Group();
-  scene.add(flowerGroup);
+  renderer.domElement.style.touchAction = 'pan-y'; // allow mobile vertical scrolling
 
   // Theme palettes configuration
   const themeColors = {
     blush: {
-      innerPetals: 0xd94b68,
-      outerPetals: 0xf27d92,
-      petalRim: 0xffadc0,
-      stem: 0x3d6647,
-      goldAccent: 0xd4af37,
-      ambient: 0xffeef2,
-      pointLight: 0xffc4d0,
-      lightIntensity: 1.5
+      mainRose: 0xd94b68,
+      secondaryRose: 0xf48b9f,
+      miniRose: 0xffadc0,
+      stamen: 0xd4af37,
+      stem: 0x2d5a37,
+      leaf: 0x3b7548,
+      vase: 0xffffff,
+      vaseBorder: 0xd4af37,
+      ambient: 0xffedf1,
+      mainLight: 0xffffff,
+      rimLight: 0xffc2ce
     },
     lavender: {
-      innerPetals: 0x6f52b8,
-      outerPetals: 0x9882d4,
-      petalRim: 0xd8cff7,
-      stem: 0x2e684f,
-      goldAccent: 0xc4b2e8,
-      ambient: 0xf2effa,
-      pointLight: 0xdfd4ff,
-      lightIntensity: 1.6
+      mainRose: 0x765bb5,
+      secondaryRose: 0x9b84d4,
+      miniRose: 0xd5cbf2,
+      stamen: 0x3b8465,
+      stem: 0x24553b,
+      leaf: 0x2f6d4d,
+      vase: 0xffffff,
+      vaseBorder: 0x8e7cc3,
+      ambient: 0xf3f0fc,
+      mainLight: 0xffffff,
+      rimLight: 0xdad0fb
     },
     midnight: {
-      innerPetals: 0xbe1938,
-      outerPetals: 0xeb3b5a,
-      petalRim: 0xffd276,
-      stem: 0x1d3b2b,
-      goldAccent: 0xf5c065,
-      ambient: 0x24283b,
-      pointLight: 0xffd276,
-      lightIntensity: 2.2
+      mainRose: 0xd91e42,
+      secondaryRose: 0xf24b6a,
+      miniRose: 0xff7b93,
+      stamen: 0xf5c065,
+      stem: 0x1d3d28,
+      leaf: 0x274e35,
+      vase: 0x1e2433,
+      vaseBorder: 0xf5c065,
+      ambient: 0x1a1e2d,
+      mainLight: 0xffeedd,
+      rimLight: 0xf5c065
     }
   };
 
-  let currentTheme = 'blush';
+  let currentTheme = document.documentElement.getAttribute('data-theme') || 'blush';
+  if (!themeColors[currentTheme]) currentTheme = 'blush';
 
-  // --- Lighting Setup ---
-  const ambientLight = new THREE.AmbientLight(themeColors.blush.ambient, 1.2);
+  // --- Lighting ---
+  const ambientLight = new THREE.AmbientLight(themeColors[currentTheme].ambient, 1.3);
   scene.add(ambientLight);
 
-  const mainLight = new THREE.DirectionalLight(0xffffff, 2.0);
-  mainLight.position.set(5, 8, 6);
+  const mainLight = new THREE.DirectionalLight(themeColors[currentTheme].mainLight, 1.8);
+  mainLight.position.set(4, 7, 5);
   mainLight.castShadow = true;
   scene.add(mainLight);
 
-  const fillLight = new THREE.DirectionalLight(0xffdbe6, 0.8);
-  fillLight.position.set(-5, -2, -3);
-  scene.add(fillLight);
+  const backLight = new THREE.DirectionalLight(0xffffff, 0.9);
+  backLight.position.set(-4, -2, -4);
+  scene.add(backLight);
 
-  const rimLight = new THREE.PointLight(themeColors.blush.pointLight, 2.0, 10);
-  rimLight.position.set(0, 3, 2);
+  const rimLight = new THREE.PointLight(themeColors[currentTheme].rimLight, 1.8, 12);
+  rimLight.position.set(0, 2.5, 2);
   scene.add(rimLight);
 
-  // --- Procedural Flower Construction ---
-  const petalMaterials = [];
+  // --- Bouquet Master Group ---
+  const bouquet = new THREE.Group();
+  scene.add(bouquet);
 
-  // Helper to create a curved velvet petal geometry
-  function createPetalGeometry(width, length, curve) {
-    const geom = new THREE.PlaneGeometry(width, length, 12, 12);
+  // Storage for materials that change with theme
+  const dynamicMaterials = [];
+
+  // Helper to create a curved 3D petal
+  function createPetal(width, length, curveZ, colorHex, isInner = false) {
+    const geom = new THREE.PlaneGeometry(width, length, 8, 8);
     const pos = geom.attributes.position;
     for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i);
       const y = pos.getY(i);
-      // Curve petal along vertical and horizontal axes
+      const x = pos.getX(i);
       const normY = (y + length / 2) / length;
-      const zCurve = -Math.sin(normY * Math.PI) * curve - Math.sin((x / width) * Math.PI) * (curve * 0.3);
-      pos.setZ(i, zCurve);
+      const z = -Math.sin(normY * Math.PI) * curveZ - Math.sin((x / width) * Math.PI) * (curveZ * 0.35);
+      pos.setZ(i, z);
     }
     geom.computeVertexNormals();
-    return geom;
-  }
 
-  // Create Rose Core & Petal Layers
-  const layers = [
-    { count: 4, width: 0.6, length: 0.8, radius: 0.2, angle: 0.35, curve: 0.35, isInner: true },
-    { count: 6, width: 0.8, length: 1.0, radius: 0.35, angle: 0.55, curve: 0.45, isInner: true },
-    { count: 8, width: 1.1, length: 1.2, radius: 0.55, angle: 0.8, curve: 0.55, isInner: false },
-    { count: 10, width: 1.3, length: 1.4, radius: 0.8, angle: 1.1, curve: 0.65, isInner: false },
-    { count: 12, width: 1.5, length: 1.5, radius: 1.05, angle: 1.35, curve: 0.75, isInner: false }
-  ];
-
-  const roseHead = new THREE.Group();
-
-  layers.forEach((layer, layerIdx) => {
-    for (let i = 0; i < layer.count; i++) {
-      const petalGeom = createPetalGeometry(layer.width, layer.length, layer.curve);
-      
-      const mat = new THREE.MeshPhysicalMaterial({
-        color: layer.isInner ? themeColors[currentTheme].innerPetals : themeColors[currentTheme].outerPetals,
-        roughness: 0.42,
-        metalness: 0.05,
-        clearcoat: 0.25,
-        clearcoatRoughness: 0.2,
-        sheen: 0.8,
-        sheenRoughness: 0.4,
-        sheenColor: new THREE.Color(themeColors[currentTheme].petalRim),
-        side: THREE.DoubleSide
-      });
-      petalMaterials.push({ mat, isInner: layer.isInner });
-
-      const petalMesh = new THREE.Mesh(petalGeom, mat);
-      petalMesh.castShadow = true;
-      petalMesh.receiveShadow = true;
-
-      const angle = (i / layer.count) * Math.PI * 2 + (layerIdx * 0.4);
-      const x = Math.cos(angle) * layer.radius;
-      const z = Math.sin(angle) * layer.radius;
-
-      petalMesh.position.set(x, layerIdx * 0.05, z);
-      petalMesh.rotation.y = -angle - Math.PI / 2;
-      petalMesh.rotation.x = layer.angle + (Math.random() * 0.1 - 0.05);
-      petalMesh.rotation.z = Math.random() * 0.1 - 0.05;
-
-      roseHead.add(petalMesh);
-    }
-  });
-
-  // Central rose bud core
-  const coreGeom = new THREE.SphereGeometry(0.35, 16, 16);
-  const coreMat = new THREE.MeshStandardMaterial({
-    color: themeColors[currentTheme].innerPetals,
-    roughness: 0.5
-  });
-  const coreMesh = new THREE.Mesh(coreGeom, coreMat);
-  coreMesh.scale.set(0.6, 1.2, 0.6);
-  coreMesh.position.y = 0.1;
-  roseHead.add(coreMesh);
-  petalMaterials.push({ mat: coreMat, isInner: true });
-
-  // Stem & Leaves
-  const stemCurve = new THREE.CubicBezierCurve3(
-    new THREE.Vector3(0, 0, 0),
-    new THREE.Vector3(0.08, -1.2, 0.05),
-    new THREE.Vector3(-0.06, -2.4, -0.05),
-    new THREE.Vector3(0.02, -3.2, 0.0)
-  );
-  const stemGeom = new THREE.TubeGeometry(stemCurve, 32, 0.075, 12, false);
-  const stemMat = new THREE.MeshStandardMaterial({
-    color: themeColors[currentTheme].stem,
-    roughness: 0.65,
-    metalness: 0.1
-  });
-  const stemMesh = new THREE.Mesh(stemGeom, stemMat);
-  stemMesh.castShadow = true;
-  flowerGroup.add(stemMesh);
-
-  // Leaves
-  function createLeaf(scale, rotY, rotZ, posY) {
-    const leafGeom = createPetalGeometry(0.6, 1.1, 0.35);
-    const leafMat = new THREE.MeshStandardMaterial({
-      color: themeColors[currentTheme].stem,
+    const mat = new THREE.MeshStandardMaterial({
+      color: colorHex,
       roughness: 0.55,
-      metalness: 0.1,
+      metalness: 0.08,
       side: THREE.DoubleSide
     });
-    const leafMesh = new THREE.Mesh(leafGeom, leafMat);
-    leafMesh.scale.set(scale, scale, scale);
-    leafMesh.position.set(0, posY, 0);
-    leafMesh.rotation.y = rotY;
-    leafMesh.rotation.z = rotZ;
-    leafMesh.rotation.x = 0.4;
-    return leafMesh;
+    dynamicMaterials.push({ mat, type: isInner ? 'inner' : 'outer' });
+
+    const mesh = new THREE.Mesh(geom, mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    return mesh;
   }
 
-  const leaf1 = createLeaf(0.9, 0.8, -0.6, -0.8);
-  const leaf2 = createLeaf(0.85, -1.5, 0.7, -1.6);
-  flowerGroup.add(leaf1);
-  flowerGroup.add(leaf2);
+  // Create a full 3D Rose Flower head
+  function createRose(scale = 1.0, mainColor, secColor) {
+    const roseGroup = new THREE.Group();
 
-  // Golden Ring/Halo accent around the flower head
-  const ringGeom = new THREE.TorusGeometry(1.6, 0.015, 16, 64);
-  const ringMat = new THREE.MeshStandardMaterial({
-    color: themeColors[currentTheme].goldAccent,
-    metalness: 0.85,
-    roughness: 0.2
-  });
-  const goldRing = new THREE.Mesh(ringGeom, ringMat);
-  goldRing.rotation.x = Math.PI / 2.3;
-  goldRing.position.y = 0.1;
-  flowerGroup.add(goldRing);
+    // Central bud
+    const coreGeom = new THREE.SphereGeometry(0.24 * scale, 12, 12);
+    const coreMat = new THREE.MeshStandardMaterial({
+      color: mainColor,
+      roughness: 0.6
+    });
+    dynamicMaterials.push({ mat: coreMat, type: 'inner' });
+    const core = new THREE.Mesh(coreGeom, coreMat);
+    core.scale.set(0.7, 1.2, 0.7);
+    core.position.y = 0.08 * scale;
+    roseGroup.add(core);
 
-  // Add the rose head to the main flower group
-  flowerGroup.add(roseHead);
-  flowerGroup.position.y = 0.5;
+    // Layers of curved petals
+    const layers = [
+      { count: 4, w: 0.5 * scale, l: 0.65 * scale, r: 0.16 * scale, tilt: 0.35, c: 0.28, inner: true },
+      { count: 6, w: 0.7 * scale, l: 0.85 * scale, r: 0.32 * scale, tilt: 0.6, c: 0.38, inner: true },
+      { count: 8, w: 0.95 * scale, l: 1.05 * scale, r: 0.52 * scale, tilt: 0.9, c: 0.48, inner: false },
+      { count: 10, w: 1.2 * scale, l: 1.25 * scale, r: 0.75 * scale, tilt: 1.2, c: 0.58, inner: false }
+    ];
 
-  // --- Falling & Drifting Petals Particle System ---
-  const petalCount = 36;
-  const particleGroup = new THREE.Group();
-  scene.add(particleGroup);
+    layers.forEach((layer, layerIdx) => {
+      for (let i = 0; i < layer.count; i++) {
+        const color = layer.inner ? mainColor : secColor;
+        const petal = createPetal(layer.w, layer.l, layer.c, color, layer.inner);
+        const angle = (i / layer.count) * Math.PI * 2 + (layerIdx * 0.45);
+        const x = Math.cos(angle) * layer.r;
+        const z = Math.sin(angle) * layer.r;
 
-  const particles = [];
-  const singlePetalGeom = createPetalGeometry(0.25, 0.35, 0.2);
+        petal.position.set(x, layerIdx * 0.04 * scale, z);
+        petal.rotation.y = -angle - Math.PI / 2;
+        petal.rotation.x = layer.tilt + (Math.random() * 0.08 - 0.04);
+        petal.rotation.z = (Math.random() * 0.1 - 0.05);
 
-  for (let i = 0; i < petalCount; i++) {
-    const pMat = new THREE.MeshStandardMaterial({
-      color: themeColors[currentTheme].outerPetals,
-      roughness: 0.45,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.85
+        roseGroup.add(petal);
+      }
     });
 
-    const pMesh = new THREE.Mesh(singlePetalGeom, pMat);
+    return roseGroup;
+  }
+
+  // 1. Central Queen Rose (باقة ورد رئيسية)
+  const centerRose = createRose(1.15, themeColors[currentTheme].mainRose, themeColors[currentTheme].secondaryRose);
+  centerRose.position.set(0, 0.35, 0);
+  bouquet.add(centerRose);
+
+  // 2. Surrounding Side Roses (ورود إضافية لتشكيل باقة حقيقية)
+  const sideRose1 = createRose(0.78, themeColors[currentTheme].secondaryRose, themeColors[currentTheme].miniRose);
+  sideRose1.position.set(0.85, 0.15, 0.2);
+  sideRose1.rotation.z = -0.4;
+  sideRose1.rotation.y = 0.5;
+  bouquet.add(sideRose1);
+
+  const sideRose2 = createRose(0.75, themeColors[currentTheme].secondaryRose, themeColors[currentTheme].miniRose);
+  sideRose2.position.set(-0.85, 0.1, 0.15);
+  sideRose2.rotation.z = 0.45;
+  sideRose2.rotation.y = -0.6;
+  bouquet.add(sideRose2);
+
+  const sideRose3 = createRose(0.7, themeColors[currentTheme].mainRose, themeColors[currentTheme].secondaryRose);
+  sideRose3.position.set(0.1, 0.2, -0.75);
+  sideRose3.rotation.x = -0.4;
+  bouquet.add(sideRose3);
+
+  // 3. Stems & Green Leaves
+  const stemMat = new THREE.MeshStandardMaterial({
+    color: themeColors[currentTheme].stem,
+    roughness: 0.7
+  });
+  dynamicMaterials.push({ mat: stemMat, type: 'stem' });
+
+  const leafMat = new THREE.MeshStandardMaterial({
+    color: themeColors[currentTheme].leaf,
+    roughness: 0.55,
+    side: THREE.DoubleSide
+  });
+  dynamicMaterials.push({ mat: leafMat, type: 'leaf' });
+
+  // Main Stems
+  const stemGeom = new THREE.CylinderGeometry(0.06, 0.08, 2.4, 12);
+  const stem1 = new THREE.Mesh(stemGeom, stemMat);
+  stem1.position.set(0, -0.9, 0);
+  bouquet.add(stem1);
+
+  // Leaves
+  function createLeafMesh(scale, x, y, z, rx, ry, rz) {
+    const leafGeom = new THREE.PlaneGeometry(0.55 * scale, 1.1 * scale, 6, 6);
+    const pos = leafGeom.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const ny = (pos.getY(i) + 0.55) / 1.1;
+      pos.setZ(i, -Math.sin(ny * Math.PI) * 0.25);
+    }
+    leafGeom.computeVertexNormals();
+
+    const leaf = new THREE.Mesh(leafGeom, leafMat);
+    leaf.position.set(x, y, z);
+    leaf.rotation.set(rx, ry, rz);
+    leaf.castShadow = true;
+    return leaf;
+  }
+
+  bouquet.add(createLeafMesh(1.1, 0.7, -0.3, 0.4, 0.6, 0.8, -0.6));
+  bouquet.add(createLeafMesh(1.0, -0.75, -0.35, 0.35, 0.5, -0.8, 0.6));
+  bouquet.add(createLeafMesh(0.9, 0.1, -0.4, -0.65, -0.7, 0.2, 0.1));
+  bouquet.add(createLeafMesh(0.85, -0.4, -0.7, 0.5, 0.8, -0.4, 0.5));
+
+  // 4. Luxury Golden Ribbon Wrap around bouquet
+  const ribbonGeom = new THREE.TorusGeometry(0.45, 0.05, 12, 32);
+  const ribbonMat = new THREE.MeshStandardMaterial({
+    color: themeColors[currentTheme].stamen,
+    metalness: 0.85,
+    roughness: 0.25
+  });
+  dynamicMaterials.push({ mat: ribbonMat, type: 'gold' });
+
+  const ribbon = new THREE.Mesh(ribbonGeom, ribbonMat);
+  ribbon.rotation.x = Math.PI / 2;
+  ribbon.position.set(0, -0.55, 0);
+  bouquet.add(ribbon);
+
+  // Second Ribbon loop
+  const ribbonBowGeom = new THREE.TorusGeometry(0.22, 0.035, 12, 24);
+  const ribbonBow1 = new THREE.Mesh(ribbonBowGeom, ribbonMat);
+  ribbonBow1.position.set(0.18, -0.58, 0.42);
+  ribbonBow1.rotation.y = 0.4;
+  bouquet.add(ribbonBow1);
+
+  const ribbonBow2 = new THREE.Mesh(ribbonBowGeom, ribbonMat);
+  ribbonBow2.position.set(-0.18, -0.58, 0.42);
+  ribbonBow2.rotation.y = -0.4;
+  bouquet.add(ribbonBow2);
+
+  // Position bouquet nicely in camera view
+  bouquet.position.y = 0.2;
+
+  // --- Falling & Floating Rose Petals ---
+  const petalsCount = 28;
+  const floatingPetals = [];
+  const petalParticleGroup = new THREE.Group();
+  scene.add(petalParticleGroup);
+
+  const smallPetalGeom = new THREE.PlaneGeometry(0.22, 0.32, 4, 4);
+  const pos = smallPetalGeom.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    pos.setZ(i, -Math.sin(((pos.getY(i) + 0.16) / 0.32) * Math.PI) * 0.12);
+  }
+  smallPetalGeom.computeVertexNormals();
+
+  for (let i = 0; i < petalsCount; i++) {
+    const pMat = new THREE.MeshStandardMaterial({
+      color: themeColors[currentTheme].secondaryRose,
+      roughness: 0.5,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.88
+    });
+    dynamicMaterials.push({ mat: pMat, type: 'petal' });
+
+    const pMesh = new THREE.Mesh(smallPetalGeom, pMat);
     pMesh.position.set(
       (Math.random() - 0.5) * 6,
-      Math.random() * 6 - 2,
-      (Math.random() - 0.5) * 5
+      Math.random() * 5 - 1.5,
+      (Math.random() - 0.5) * 4
     );
-
     pMesh.rotation.set(
       Math.random() * Math.PI,
       Math.random() * Math.PI,
       Math.random() * Math.PI
     );
 
-    const speed = 0.008 + Math.random() * 0.012;
-    const rotSpeed = {
-      x: (Math.random() - 0.5) * 0.02,
-      y: (Math.random() - 0.5) * 0.02,
-      z: (Math.random() - 0.5) * 0.02
-    };
-
-    particles.push({ mesh: pMesh, speed, rotSpeed, mat: pMat });
-    particleGroup.add(pMesh);
+    floatingPetals.push({
+      mesh: pMesh,
+      speedY: 0.006 + Math.random() * 0.012,
+      speedRotX: (Math.random() - 0.5) * 0.02,
+      speedRotY: (Math.random() - 0.5) * 0.02,
+      swayOffset: Math.random() * Math.PI * 2
+    });
+    petalParticleGroup.add(pMesh);
   }
 
-  // --- Interaction Tracking (Mouse & Touch) ---
-  let targetRotationX = 0.15;
-  let targetRotationY = 0;
+  // --- Interaction Tracking (Mouse & Touch Drag) ---
+  let isDragging = false;
+  let prevX = 0;
+  let prevY = 0;
+  let targetRotY = 0;
+  let targetRotX = 0.1;
   let targetTiltZ = 0;
-  let isPointerDown = false;
-  let prevPointerX = 0;
-  let prevPointerY = 0;
 
   function onPointerMove(e) {
-    const rect = container.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-    const normX = ((clientX - rect.left) / rect.width) * 2 - 1;
-    const normY = -(((clientY - rect.top) / rect.height) * 2 - 1);
-
-    if (isPointerDown) {
-      const deltaX = clientX - prevPointerX;
-      const deltaY = clientY - prevPointerY;
-      targetRotationY += deltaX * 0.012;
-      targetRotationX += deltaY * 0.012;
-      prevPointerX = clientX;
-      prevPointerY = clientY;
+    if (isDragging) {
+      const deltaX = clientX - prevX;
+      const deltaY = clientY - prevY;
+      targetRotY += deltaX * 0.012;
+      targetRotX += deltaY * 0.01;
+      targetRotX = Math.max(-0.4, Math.min(0.6, targetRotX));
+      prevX = clientX;
+      prevY = clientY;
     } else {
-      targetRotationY = normX * 0.55;
-      targetRotationX = 0.2 - normY * 0.4;
-      targetTiltZ = -normX * 0.2;
+      const rect = container.getBoundingClientRect();
+      const normX = ((clientX - rect.left) / rect.width) * 2 - 1;
+      const normY = -(((clientY - rect.top) / rect.height) * 2 - 1);
+      targetRotY = normX * 0.45;
+      targetRotX = 0.15 - normY * 0.25;
+      targetTiltZ = -normX * 0.15;
     }
   }
 
   function onPointerDown(e) {
-    isPointerDown = true;
-    prevPointerX = e.touches ? e.touches[0].clientX : e.clientX;
-    prevPointerY = e.touches ? e.touches[0].clientY : e.clientY;
+    isDragging = true;
+    prevX = e.touches ? e.touches[0].clientX : e.clientX;
+    prevY = e.touches ? e.touches[0].clientY : e.clientY;
   }
 
   function onPointerUp() {
-    isPointerDown = false;
+    isDragging = false;
   }
 
   container.addEventListener('mousemove', onPointerMove, { passive: true });
@@ -319,83 +381,74 @@ export function initThreeFlowerScene(containerId) {
   window.addEventListener('touchend', onPointerUp);
 
   // Resize handler
-  function onResize() {
-    if (!container) return;
-    const newWidth = container.clientWidth;
-    const newHeight = container.clientHeight;
-    camera.aspect = newWidth / newHeight;
+  function handleResize() {
+    if (!container || !renderer || !camera) return;
+    const w = container.clientWidth || 400;
+    const h = container.clientHeight || 400;
+    if (w < 50 || h < 50) return;
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize(newWidth, newHeight);
-  }
-  window.addEventListener('resize', onResize);
-
-  // --- Theme Update API ---
-  function updateTheme3D(themeName) {
-    if (!themeColors[themeName]) return;
-    currentTheme = themeName;
-    const palette = themeColors[themeName];
-
-    // Update petal colors
-    petalMaterials.forEach(({ mat, isInner }) => {
-      mat.color.setHex(isInner ? palette.innerPetals : palette.outerPetals);
-      if (mat.sheenColor) {
-        mat.sheenColor.setHex(palette.petalRim);
-      }
-    });
-
-    // Update stem & leaves
-    stemMat.color.setHex(palette.stem);
-    ringMat.color.setHex(palette.goldAccent);
-
-    // Update particles
-    particles.forEach(p => {
-      p.mat.color.setHex(palette.outerPetals);
-    });
-
-    // Update lights
-    ambientLight.color.setHex(palette.ambient);
-    rimLight.color.setHex(palette.pointLight);
-    rimLight.intensity = palette.lightIntensity;
+    renderer.setSize(w, h);
   }
 
-  // --- Animation Loop ---
-  let clock = new THREE.Clock();
+  window.addEventListener('resize', handleResize);
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => handleResize());
+    ro.observe(container);
+  }
+
+  // --- Dynamic Theme Updater ---
+  function updateTheme3D(newTheme) {
+    if (!themeColors[newTheme]) return;
+    currentTheme = newTheme;
+    const p = themeColors[newTheme];
+
+    dynamicMaterials.forEach(({ mat, type }) => {
+      if (type === 'inner') mat.color.setHex(p.mainRose);
+      else if (type === 'outer' || type === 'petal') mat.color.setHex(p.secondaryRose);
+      else if (type === 'stem') mat.color.setHex(p.stem);
+      else if (type === 'leaf') mat.color.setHex(p.leaf);
+      else if (type === 'gold') mat.color.setHex(p.stamen);
+    });
+
+    ambientLight.color.setHex(p.ambient);
+    mainLight.color.setHex(p.mainLight);
+    rimLight.color.setHex(p.rimLight);
+  }
+
+  // --- Render Loop ---
   let animId = null;
+  const clock = new THREE.Clock();
 
   function animate() {
     animId = requestAnimationFrame(animate);
 
-    const delta = clock.getDelta();
     const elapsedTime = clock.getElapsedTime();
 
-    // Gentle floating breathing animation for flower
-    flowerGroup.position.y = 0.5 + Math.sin(elapsedTime * 1.5) * 0.08;
+    // Gentle floating breathing animation
+    bouquet.position.y = 0.2 + Math.sin(elapsedTime * 1.6) * 0.06;
 
-    // Smooth inertia interpolation towards mouse/touch targets
-    flowerGroup.rotation.x += (targetRotationX - flowerGroup.rotation.x) * 0.06;
-    flowerGroup.rotation.y += (targetRotationY - flowerGroup.rotation.y) * 0.06;
-    flowerGroup.rotation.z += (targetTiltZ - flowerGroup.rotation.z) * 0.06;
+    // Smooth inertia interpolation
+    bouquet.rotation.x += (targetRotX - bouquet.rotation.x) * 0.08;
+    bouquet.rotation.y += (targetRotY - bouquet.rotation.y) * 0.08;
+    bouquet.rotation.z += (targetTiltZ - bouquet.rotation.z) * 0.08;
 
-    // Autonomous slow rotation
-    if (!isPointerDown) {
-      targetRotationY += 0.003;
+    // Subtle automatic spin when idle
+    if (!isDragging) {
+      targetRotY += 0.0025;
     }
 
-    // Slowly spin the golden halo ring
-    goldRing.rotation.z += 0.005;
+    // Floating petals animation
+    floatingPetals.forEach(p => {
+      p.mesh.position.y -= p.speedY;
+      p.mesh.position.x += Math.sin(elapsedTime * 1.2 + p.swayOffset) * 0.004;
+      p.mesh.rotation.x += p.speedRotX;
+      p.mesh.rotation.y += p.speedRotY;
 
-    // Animate falling drifting petals
-    particles.forEach(p => {
-      p.mesh.position.y -= p.speed;
-      p.mesh.position.x += Math.sin(elapsedTime + p.speed * 100) * 0.004;
-      p.mesh.rotation.x += p.rotSpeed.x;
-      p.mesh.rotation.y += p.rotSpeed.y;
-      p.mesh.rotation.z += p.rotSpeed.z;
-
-      // Wrap around when falling beneath view
-      if (p.mesh.position.y < -3.2) {
-        p.mesh.position.y = 3.2;
-        p.mesh.position.x = (Math.random() - 0.5) * 6;
+      // Wrap around
+      if (p.mesh.position.y < -2.6) {
+        p.mesh.position.y = 2.8;
+        p.mesh.position.x = (Math.random() - 0.5) * 5;
       }
     });
 
@@ -408,13 +461,10 @@ export function initThreeFlowerScene(containerId) {
     updateTheme3D,
     destroy() {
       cancelAnimationFrame(animId);
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', handleResize);
       window.removeEventListener('mouseup', onPointerUp);
       window.removeEventListener('touchend', onPointerUp);
       renderer.dispose();
-      if (renderer.domElement && renderer.domElement.parentNode) {
-        renderer.domElement.parentNode.removeChild(renderer.domElement);
-      }
     }
   };
 }

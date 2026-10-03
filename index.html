@@ -10,8 +10,13 @@
   <link rel="stylesheet" href="css/themes.css">
   <link rel="stylesheet" href="css/main.css">
 
-  <!-- Three.js from CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Three.js Local with CDN Fallback -->
+  <script src="js/vendor/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+    }
+  </script>
 </head>
 <body>
 
@@ -377,7 +382,7 @@
     </div>
   </footer>
 
-  <!-- Application Logic (ES Module) -->
-  <script type="module" src="js/app.js"></script>
+  <!-- Application Logic (Universal Native Bundle - Zero CORS) -->
+  <script src="js/bundle.js"></script>
 </body>
 </html>
