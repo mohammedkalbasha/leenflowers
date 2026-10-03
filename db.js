@@ -58,6 +58,7 @@ export function initDatabase(dbPath = 'data/leen_flowers.db') {
       deliveryTime TEXT,
       exactTime TEXT,
       locationUrl TEXT,
+      fulfillmentType TEXT DEFAULT 'delivery',
       giftCardMessage TEXT,
       giftCardSign TEXT,
       orderNotes TEXT,
@@ -85,6 +86,9 @@ export function initDatabase(dbPath = 'data/leen_flowers.db') {
   } catch (_) {}
   try {
     dbInstance.exec('ALTER TABLE orders ADD COLUMN locationUrl TEXT;');
+  } catch (_) {}
+  try {
+    dbInstance.exec("ALTER TABLE orders ADD COLUMN fulfillmentType TEXT DEFAULT 'delivery';");
   } catch (_) {}
 
   // 2. Auto-seed config if empty
@@ -445,9 +449,9 @@ export const OrdersDb = {
       INSERT INTO orders (
         orderNumber, buyerName, buyerPhone, recipientName, recipientPhone,
         city, detailedAddress, deliveryDate, deliveryTime, exactTime, locationUrl,
-        giftCardMessage, giftCardSign, orderNotes,
+        fulfillmentType, giftCardMessage, giftCardSign, orderNotes,
         items, subtotal, deliveryFee, total, status, createdAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       orderNumber, order.buyerName, order.buyerPhone,
       order.recipientName || order.buyerName,
@@ -455,6 +459,7 @@ export const OrdersDb = {
       order.city, order.detailedAddress,
       order.deliveryDate || '', order.deliveryTime || '',
       order.exactTime || '', order.locationUrl || '',
+      order.fulfillmentType || 'delivery',
       order.giftCardMessage || '', order.giftCardSign || '',
       order.orderNotes || '', itemsJson,
       order.subtotal || 0, order.deliveryFee || 0, order.total || 0,

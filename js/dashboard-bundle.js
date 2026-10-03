@@ -1076,6 +1076,7 @@ function openPrintModal(order) {
         <div class="slip-grid">
           <div class="slip-info-group">
             <h4>👤 بيانات المستلم والتوصيل</h4>
+            <p>نوع الطلب: <strong style="color:var(--primary);">${order.fulfillmentType === 'pickup' ? '🏬 استلام من المحل (الفرع)' : '🚗 توصيل إلى العنوان'}</strong></p>
             <p>الاسم: <strong>${order.recipientName || order.buyerName}</strong></p>
             <p>الهاتف: <strong>${order.recipientPhone || order.buyerPhone}</strong></p>
             <p>المدينة / المنطقة: <strong>${order.city}</strong></p>

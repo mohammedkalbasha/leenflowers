@@ -724,6 +724,7 @@ class CartStore {
       deliveryTime = '',
       exactTime = '',
       locationUrl = '',
+      fulfillmentType = 'delivery',
       isGiftCard = false,
       cardMessage = '',
       cardSign = '',
@@ -731,7 +732,10 @@ class CartStore {
     } = details;
 
     const subtotal = this.getSubtotal();
-    const deliveryFee = details.deliveryFee !== undefined ? Number(details.deliveryFee) : 0;
+    const isPickup = fulfillmentType === 'pickup';
+    const deliveryFee = isPickup
+      ? 0
+      : (details.deliveryFee !== undefined ? Number(details.deliveryFee) : 3.0);
     const grandTotal = subtotal + deliveryFee;
 
     const itemsText = this.items
@@ -754,17 +758,29 @@ class CartStore {
     msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
     msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
 
-    msg += `📍 *تفاصيل التوصيل والاستلام:*\n`;
-    msg += `• المدينة / المنطقة: ${city || 'عمان'}\n`;
-    msg += `• العنوان التفصيلي: ${address || 'سيتم التوضيح عبر الواتساب'}\n`;
-    if (locationUrl && locationUrl.trim()) {
-      msg += `• رابط الموقع الجغرافي: ${locationUrl.trim()}\n`;
-    }
-    msg += `• التاريخ المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
-    if (exactTime && exactTime.trim()) {
-      msg += `• الساعة المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
+    if (isPickup) {
+      msg += `🏬 *طريقة وموعد الاستلام:*\n`;
+      msg += `• نوع الطلب: استلام شخصي من المحل (الفرع الرئيسي) 🏬\n`;
+      msg += `• تاريخ الاستلام المطلوب: ${deliveryDate || 'اليوم'}\n`;
+      if (exactTime && exactTime.trim()) {
+        msg += `• ساعة الاستلام المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
+      } else {
+        msg += `• فترة الاستلام: ${deliveryTime || 'خلال ساعات الدوام'}\n\n`;
+      }
     } else {
-      msg += `• الفترة: ${deliveryTime || 'خلال اليوم'}\n\n`;
+      msg += `📍 *تفاصيل التوصيل إلى العنوان:*\n`;
+      msg += `• نوع الطلب: توصيل إلى العنوان 🚗\n`;
+      msg += `• المدينة / المنطقة: ${city || 'عمان'}\n`;
+      msg += `• العنوان التفصيلي: ${address || 'سيتم التوضيح عبر الواتساب'}\n`;
+      if (locationUrl && locationUrl.trim()) {
+        msg += `• رابط الموقع الجغرافي: ${locationUrl.trim()}\n`;
+      }
+      msg += `• التاريخ المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
+      if (exactTime && exactTime.trim()) {
+        msg += `• الساعة المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
+      } else {
+        msg += `• الفترة: ${deliveryTime || 'خلال اليوم'}\n\n`;
+      }
     }
 
     if ((isGiftCard || cardMessage) && cardMessage && cardMessage.trim()) {
@@ -784,12 +800,12 @@ class CartStore {
     msg += `${itemsText}\n`;
     msg += `─────────────────────────\n`;
     msg += `💰 *قيمة المنتجات:* ${subtotal.toFixed(2)} د.أ\n`;
-    if (deliveryFee > 0) {
-      msg += `🚗 *رسوم التوصيل التقديرية:* ${deliveryFee.toFixed(2)} د.أ\n`;
-      msg += `✨ *المجموع الإجمالي:* ${grandTotal.toFixed(2)} د.أ\n`;
+    if (isPickup) {
+      msg += `🏬 *رسوم التوصيل:* مجاناً 0.00 د.أ (استلام من المحل)\n`;
     } else {
-      msg += `✨ *المجموع الإجمالي:* ${grandTotal.toFixed(2)} د.أ\n`;
+      msg += `🚗 *رسوم التوصيل:* ${deliveryFee.toFixed(2)} د.أ\n`;
     }
+    msg += `✨ *المجموع الإجمالي:* ${grandTotal.toFixed(2)} د.أ\n`;
 
     if (notes && notes.trim()) {
       msg += `\n📝 *ملاحظات خاصة:*\n${notes.trim()}\n`;
@@ -2318,12 +2334,36 @@ function initCartDrawer() {
 /**
  * Checkout Flow & Modal
  */
+let currentFulfillmentType = 'delivery';
+
+function updateCheckoutTotals() {
+  const modalTotal = document.getElementById('modal-total-display');
+  const feeNote = document.getElementById('modal-delivery-fee-note');
+  const subtotal = CartManager.getSubtotal();
+  const isPickup = currentFulfillmentType === 'pickup';
+  const deliveryFee = isPickup ? 0.0 : 3.0;
+  const grandTotal = subtotal + deliveryFee;
+
+  if (modalTotal) {
+    modalTotal.textContent = `${grandTotal.toFixed(2)} د.أ`;
+  }
+  if (feeNote) {
+    if (isPickup) {
+      feeNote.textContent = 'استلام من المحل (مجاناً 0.00 د.أ)';
+      feeNote.style.color = '#16a34a';
+    } else {
+      feeNote.textContent = 'شامل رسوم التوصيل (+3.00 د.أ)';
+      feeNote.style.color = 'var(--text-muted)';
+    }
+  }
+}
+
+/**
+ * Checkout Flow & Modal
+ */
 function openCheckoutModal() {
   const modalOverlay = document.getElementById('checkout-modal-overlay');
-  const modalTotal = document.getElementById('modal-total-display');
-  if (modalTotal) {
-    modalTotal.textContent = `${CartManager.getSubtotal().toFixed(2)} د.أ`;
-  }
+  updateCheckoutTotals();
   if (modalOverlay) {
     modalOverlay.classList.add('active');
     lockBodyScroll();
@@ -2340,6 +2380,67 @@ function initCheckoutFlow() {
   const giftCardSign = document.getElementById('gift-card-sign');
   const btnGetLocation = document.getElementById('btn-get-location');
   const locationInput = document.getElementById('delivery-location-url');
+
+  // Fulfillment Radios & Elements
+  const typeDeliveryRadio = document.getElementById('type-delivery');
+  const typePickupRadio = document.getElementById('type-pickup');
+  const optionDeliveryLabel = document.getElementById('option-delivery-label');
+  const optionPickupLabel = document.getElementById('option-pickup-label');
+  const deliveryFields = document.getElementById('delivery-specific-fields');
+  const pickupInfoBox = document.getElementById('pickup-store-info');
+  const citySelect = document.getElementById('city-select');
+  const detailedAddress = document.getElementById('detailed-address');
+  const labelDeliveryDate = document.getElementById('label-delivery-date');
+  const labelDeliveryTime = document.getElementById('label-delivery-time');
+
+  function setFulfillmentMode(mode) {
+    currentFulfillmentType = mode;
+    const isPickup = mode === 'pickup';
+
+    if (optionDeliveryLabel && optionPickupLabel) {
+      if (isPickup) {
+        optionPickupLabel.classList.add('active');
+        optionDeliveryLabel.classList.remove('active');
+        if (typePickupRadio) typePickupRadio.checked = true;
+      } else {
+        optionDeliveryLabel.classList.add('active');
+        optionPickupLabel.classList.remove('active');
+        if (typeDeliveryRadio) typeDeliveryRadio.checked = true;
+      }
+    }
+
+    if (deliveryFields && pickupInfoBox) {
+      deliveryFields.style.display = isPickup ? 'none' : 'block';
+      pickupInfoBox.style.display = isPickup ? 'block' : 'none';
+    }
+
+    if (citySelect && detailedAddress) {
+      citySelect.required = !isPickup;
+      detailedAddress.required = !isPickup;
+    }
+
+    if (labelDeliveryDate) {
+      labelDeliveryDate.textContent = isPickup ? 'تاريخ الاستلام من المحل المطلوب *' : 'تاريخ التوصيل المطلوب *';
+    }
+    if (labelDeliveryTime) {
+      labelDeliveryTime.textContent = isPickup ? 'ساعة الاستلام المحددة' : 'الساعة المحددة للتوصيل';
+    }
+
+    updateCheckoutTotals();
+  }
+
+  if (typeDeliveryRadio) {
+    typeDeliveryRadio.addEventListener('change', () => setFulfillmentMode('delivery'));
+  }
+  if (typePickupRadio) {
+    typePickupRadio.addEventListener('change', () => setFulfillmentMode('pickup'));
+  }
+  if (optionDeliveryLabel) {
+    optionDeliveryLabel.addEventListener('click', () => setFulfillmentMode('delivery'));
+  }
+  if (optionPickupLabel) {
+    optionPickupLabel.addEventListener('click', () => setFulfillmentMode('pickup'));
+  }
 
   function closeCheckout() {
     if (modalOverlay) modalOverlay.classList.remove('active');
@@ -2414,23 +2515,31 @@ function initCheckoutFlow() {
         return;
       }
 
+      const isPickup = currentFulfillmentType === 'pickup';
       const isGift = toggleGiftCard ? toggleGiftCard.checked : false;
       const exactTimeVal = document.getElementById('delivery-exact-time')
         ? document.getElementById('delivery-exact-time').value
         : '';
       const locationUrlVal = locationInput ? locationInput.value.trim() : '';
 
+      const subtotal = CartManager.getSubtotal();
+      const deliveryFee = isPickup ? 0.0 : 3.0;
+      const total = subtotal + deliveryFee;
+
       const orderDetails = {
         buyerName: document.getElementById('buyer-name').value.trim(),
         buyerPhone: document.getElementById('buyer-phone').value.trim(),
         recipientName: document.getElementById('recipient-name').value.trim(),
         recipientPhone: document.getElementById('recipient-phone').value.trim(),
-        city: document.getElementById('city-select').value,
-        address: document.getElementById('detailed-address').value.trim(),
+        fulfillmentType: currentFulfillmentType,
+        city: isPickup ? 'عمان - استلام من الفرع' : (citySelect ? citySelect.value : 'عمان'),
+        address: isPickup ? 'استلام شخصي من المحل (الفرع الرئيسي - الجبيهة)' : (detailedAddress ? detailedAddress.value.trim() : ''),
         deliveryDate: document.getElementById('delivery-date').value,
         deliveryTime: document.getElementById('delivery-time').value,
         exactTime: exactTimeVal,
-        locationUrl: locationUrlVal,
+        locationUrl: isPickup ? '' : locationUrlVal,
+        deliveryFee: deliveryFee,
+        total: total,
         isGiftCard: isGift,
         cardMessage: isGift && giftCardMsg ? giftCardMsg.value.trim() : '',
         cardSign: isGift && giftCardSign ? giftCardSign.value.trim() : '',
@@ -2445,6 +2554,7 @@ function initCheckoutFlow() {
           buyerPhone: orderDetails.buyerPhone,
           recipientName: orderDetails.recipientName || orderDetails.buyerName,
           recipientPhone: orderDetails.recipientPhone || orderDetails.buyerPhone,
+          fulfillmentType: orderDetails.fulfillmentType,
           city: orderDetails.city,
           detailedAddress: orderDetails.address,
           deliveryDate: orderDetails.deliveryDate,
@@ -2460,9 +2570,9 @@ function initCheckoutFlow() {
             qty: item.quantity,
             price: item.product.price
           })),
-          subtotal: CartManager.getSubtotal(),
-          deliveryFee: 3.0,
-          total: CartManager.getSubtotal() + 3.0
+          subtotal: subtotal,
+          deliveryFee: deliveryFee,
+          total: total
         });
       } catch (err) {
         console.warn('Could not save to API database, fallback to offline mode:', err.message);
@@ -2473,7 +2583,7 @@ function initCheckoutFlow() {
       }
 
       // 2. Save order to local history as backup
-      saveOrderToLocalHistory(orderDetails, CartManager.getItems(), CartManager.getSubtotal());
+      saveOrderToLocalHistory(orderDetails, CartManager.getItems(), subtotal);
 
       // 3. Generate WhatsApp Link with official order number, location, exact time, and card
       const targetPhone = StoreConfig.defaultWhatsApp;
@@ -2482,12 +2592,14 @@ function initCheckoutFlow() {
       // 4. Close modal and clear cart
       closeCheckout();
       form.reset();
+      setFulfillmentMode('delivery');
       if (toggleGiftCard) toggleGiftCard.checked = false;
       if (giftCardBox) giftCardBox.style.display = 'none';
       CartManager.clear();
 
       const orderBadgeText = orderDetails.orderNumber ? ` رقم [${orderDetails.orderNumber}]` : '';
-      showToast(`تم تأكيد الطلب${orderBadgeText}! جاري فتح الواتساب... 💐`);
+      const modeText = isPickup ? ' (استلام من المحل)' : ' (توصيل)';
+      showToast(`تم تأكيد الطلب${orderBadgeText}${modeText}! جاري فتح الواتساب... 💐`);
 
       // 5. Open WhatsApp in new tab/app
       window.open(waUrl, '_blank');

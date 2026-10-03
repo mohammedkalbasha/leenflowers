@@ -114,6 +114,7 @@ class CartStore {
       deliveryTime = '',
       exactTime = '',
       locationUrl = '',
+      fulfillmentType = 'delivery',
       isGiftCard = false,
       cardMessage = '',
       cardSign = '',
@@ -121,7 +122,10 @@ class CartStore {
     } = details;
 
     const subtotal = this.getSubtotal();
-    const deliveryFee = details.deliveryFee !== undefined ? Number(details.deliveryFee) : 0;
+    const isPickup = fulfillmentType === 'pickup';
+    const deliveryFee = isPickup
+      ? 0
+      : (details.deliveryFee !== undefined ? Number(details.deliveryFee) : 3.0);
     const grandTotal = subtotal + deliveryFee;
 
     const itemsText = this.items
@@ -144,17 +148,29 @@ class CartStore {
     msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
     msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
 
-    msg += `📍 *تفاصيل التوصيل والاستلام:*\n`;
-    msg += `• المدينة / المنطقة: ${city || 'عمان'}\n`;
-    msg += `• العنوان التفصيلي: ${address || 'سيتم التوضيح عبر الواتساب'}\n`;
-    if (locationUrl && locationUrl.trim()) {
-      msg += `• رابط الموقع الجغرافي: ${locationUrl.trim()}\n`;
-    }
-    msg += `• التاريخ المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
-    if (exactTime && exactTime.trim()) {
-      msg += `• الساعة المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
+    if (isPickup) {
+      msg += `🏬 *طريقة وموعد الاستلام:*\n`;
+      msg += `• نوع الطلب: استلام شخصي من المحل (الفرع الرئيسي) 🏬\n`;
+      msg += `• تاريخ الاستلام المطلوب: ${deliveryDate || 'اليوم'}\n`;
+      if (exactTime && exactTime.trim()) {
+        msg += `• ساعة الاستلام المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
+      } else {
+        msg += `• فترة الاستلام: ${deliveryTime || 'خلال ساعات الدوام'}\n\n`;
+      }
     } else {
-      msg += `• الفترة: ${deliveryTime || 'خلال اليوم'}\n\n`;
+      msg += `📍 *تفاصيل التوصيل إلى العنوان:*\n`;
+      msg += `• نوع الطلب: توصيل إلى العنوان 🚗\n`;
+      msg += `• المدينة / المنطقة: ${city || 'عمان'}\n`;
+      msg += `• العنوان التفصيلي: ${address || 'سيتم التوضيح عبر الواتساب'}\n`;
+      if (locationUrl && locationUrl.trim()) {
+        msg += `• رابط الموقع الجغرافي: ${locationUrl.trim()}\n`;
+      }
+      msg += `• التاريخ المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
+      if (exactTime && exactTime.trim()) {
+        msg += `• الساعة المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
+      } else {
+        msg += `• الفترة: ${deliveryTime || 'خلال اليوم'}\n\n`;
+      }
     }
 
     if ((isGiftCard || cardMessage) && cardMessage && cardMessage.trim()) {
@@ -174,12 +190,12 @@ class CartStore {
     msg += `${itemsText}\n`;
     msg += `─────────────────────────\n`;
     msg += `💰 *قيمة المنتجات:* ${subtotal.toFixed(2)} د.أ\n`;
-    if (deliveryFee > 0) {
-      msg += `🚗 *رسوم التوصيل التقديرية:* ${deliveryFee.toFixed(2)} د.أ\n`;
-      msg += `✨ *المجموع الإجمالي:* ${grandTotal.toFixed(2)} د.أ\n`;
+    if (isPickup) {
+      msg += `🏬 *رسوم التوصيل:* مجاناً 0.00 د.أ (استلام من المحل)\n`;
     } else {
-      msg += `✨ *المجموع الإجمالي:* ${grandTotal.toFixed(2)} د.أ\n`;
+      msg += `🚗 *رسوم التوصيل:* ${deliveryFee.toFixed(2)} د.أ\n`;
     }
+    msg += `✨ *المجموع الإجمالي:* ${grandTotal.toFixed(2)} د.أ\n`;
 
     if (notes && notes.trim()) {
       msg += `\n📝 *ملاحظات خاصة:*\n${notes.trim()}\n`;
