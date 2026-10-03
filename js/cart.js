@@ -140,17 +140,21 @@ class CartStore {
       msg += `🏷️ *رقم الطلب الرسمي:* ${details.orderNumber}\n`;
     }
     msg += `─────────────────────────\n`;
-    msg += `👤 *بيانات المشتري:*\n`;
+    msg += `👤 *بيانات المشتري (صاحب الطلب):*\n`;
     msg += `• الاسم: ${buyerName || 'غير محدد'}\n`;
     msg += `• الهاتف: ${buyerPhone || 'غير محدد'}\n\n`;
 
-    msg += `🎁 *بيانات المستلم:*\n`;
-    msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
-    msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
-
     if (isPickup) {
       msg += `🏬 *طريقة وموعد الاستلام:*\n`;
-      msg += `• نوع الطلب: استلام شخصي من المحل (الفرع الرئيسي) 🏬\n`;
+      msg += `• نوع الطلب: استلام من المحل (الفرع الرئيسي) 🏬\n`;
+      if (details.pickupSubmode === 'other' || (recipientName && recipientName !== buyerName)) {
+        msg += `• المستلم في الفرع (إهداء لشخص آخر): 🎁 ${recipientName}\n`;
+        if (recipientPhone && recipientPhone !== buyerPhone) {
+          msg += `• هاتف المستلم: ${recipientPhone}\n`;
+        }
+      } else {
+        msg += `• المستلم: المشتري نفسه (${buyerName}) 🙋‍♂️\n`;
+      }
       msg += `• تاريخ الاستلام المطلوب: ${deliveryDate || 'اليوم'}\n`;
       if (exactTime && exactTime.trim()) {
         msg += `• ساعة الاستلام المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
@@ -158,6 +162,10 @@ class CartStore {
         msg += `• فترة الاستلام: ${deliveryTime || 'خلال ساعات الدوام'}\n\n`;
       }
     } else {
+      msg += `🎁 *بيانات المستلم (المرسل إليه):*\n`;
+      msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
+      msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
+
       msg += `📍 *تفاصيل التوصيل إلى العنوان:*\n`;
       msg += `• نوع الطلب: توصيل إلى العنوان 🚗\n`;
       msg += `• المدينة / المنطقة: ${city || 'عمان'}\n`;
@@ -165,7 +173,7 @@ class CartStore {
       if (locationUrl && locationUrl.trim()) {
         msg += `• رابط الموقع الجغرافي: ${locationUrl.trim()}\n`;
       }
-      msg += `• التاريخ المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
+      msg += `• تاريخ التوصيل المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
       if (exactTime && exactTime.trim()) {
         msg += `• الساعة المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
       } else {

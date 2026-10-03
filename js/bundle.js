@@ -750,17 +750,21 @@ class CartStore {
       msg += `🏷️ *رقم الطلب الرسمي:* ${details.orderNumber}\n`;
     }
     msg += `─────────────────────────\n`;
-    msg += `👤 *بيانات المشتري:*\n`;
+    msg += `👤 *بيانات المشتري (صاحب الطلب):*\n`;
     msg += `• الاسم: ${buyerName || 'غير محدد'}\n`;
     msg += `• الهاتف: ${buyerPhone || 'غير محدد'}\n\n`;
 
-    msg += `🎁 *بيانات المستلم:*\n`;
-    msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
-    msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
-
     if (isPickup) {
       msg += `🏬 *طريقة وموعد الاستلام:*\n`;
-      msg += `• نوع الطلب: استلام شخصي من المحل (الفرع الرئيسي) 🏬\n`;
+      msg += `• نوع الطلب: استلام من المحل (الفرع الرئيسي) 🏬\n`;
+      if (details.pickupSubmode === 'other' || (recipientName && recipientName !== buyerName)) {
+        msg += `• المستلم في الفرع (إهداء لشخص آخر): 🎁 ${recipientName}\n`;
+        if (recipientPhone && recipientPhone !== buyerPhone) {
+          msg += `• هاتف المستلم: ${recipientPhone}\n`;
+        }
+      } else {
+        msg += `• المستلم: المشتري نفسه (${buyerName}) 🙋‍♂️\n`;
+      }
       msg += `• تاريخ الاستلام المطلوب: ${deliveryDate || 'اليوم'}\n`;
       if (exactTime && exactTime.trim()) {
         msg += `• ساعة الاستلام المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
@@ -768,6 +772,10 @@ class CartStore {
         msg += `• فترة الاستلام: ${deliveryTime || 'خلال ساعات الدوام'}\n\n`;
       }
     } else {
+      msg += `🎁 *بيانات المستلم (المرسل إليه):*\n`;
+      msg += `• الاسم: ${recipientName || buyerName || 'نفس المشتري'}\n`;
+      msg += `• الهاتف: ${recipientPhone || buyerPhone || 'نفس المشتري'}\n\n`;
+
       msg += `📍 *تفاصيل التوصيل إلى العنوان:*\n`;
       msg += `• نوع الطلب: توصيل إلى العنوان 🚗\n`;
       msg += `• المدينة / المنطقة: ${city || 'عمان'}\n`;
@@ -775,7 +783,7 @@ class CartStore {
       if (locationUrl && locationUrl.trim()) {
         msg += `• رابط الموقع الجغرافي: ${locationUrl.trim()}\n`;
       }
-      msg += `• التاريخ المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
+      msg += `• تاريخ التوصيل المطلوب: ${deliveryDate || 'في أقرب وقت'}\n`;
       if (exactTime && exactTime.trim()) {
         msg += `• الساعة المحددة: ${exactTime.trim()} (${deliveryTime || 'مساءً'})\n\n`;
       } else {
@@ -2386,12 +2394,60 @@ function initCheckoutFlow() {
   const typePickupRadio = document.getElementById('type-pickup');
   const optionDeliveryLabel = document.getElementById('option-delivery-label');
   const optionPickupLabel = document.getElementById('option-pickup-label');
-  const deliveryFields = document.getElementById('delivery-specific-fields');
-  const pickupInfoBox = document.getElementById('pickup-store-info');
+  const deliverySectionWrap = document.getElementById('delivery-section-wrap');
+  const pickupOptionsSection = document.getElementById('pickup-options-section');
+  const pickupForSelfRadio = document.getElementById('pickup-for-self');
+  const pickupForOtherRadio = document.getElementById('pickup-for-other');
+  const pickupForSelfLabel = document.getElementById('pickup-for-self-label');
+  const pickupForOtherLabel = document.getElementById('pickup-for-other-label');
+  const pickupOtherDetails = document.getElementById('pickup-other-details');
+  const pickupRecipientName = document.getElementById('pickup-recipient-name');
+  const pickupRecipientPhone = document.getElementById('pickup-recipient-phone');
+
   const citySelect = document.getElementById('city-select');
   const detailedAddress = document.getElementById('detailed-address');
   const labelDeliveryDate = document.getElementById('label-delivery-date');
   const labelDeliveryTime = document.getElementById('label-delivery-time');
+
+  let currentPickupRecipient = 'self'; // 'self' or 'other'
+
+  function setPickupRecipient(submode) {
+    currentPickupRecipient = submode;
+    const isOther = submode === 'other';
+
+    if (pickupForSelfLabel && pickupForOtherLabel) {
+      if (isOther) {
+        pickupForOtherLabel.classList.add('active');
+        pickupForSelfLabel.classList.remove('active');
+        if (pickupForOtherRadio) pickupForOtherRadio.checked = true;
+      } else {
+        pickupForSelfLabel.classList.add('active');
+        pickupForOtherLabel.classList.remove('active');
+        if (pickupForSelfRadio) pickupForSelfRadio.checked = true;
+      }
+    }
+
+    if (pickupOtherDetails) {
+      pickupOtherDetails.style.display = isOther ? 'block' : 'none';
+    }
+    if (pickupRecipientName) {
+      pickupRecipientName.required = isOther;
+      if (isOther) pickupRecipientName.focus();
+    }
+  }
+
+  if (pickupForSelfRadio) {
+    pickupForSelfRadio.addEventListener('change', () => setPickupRecipient('self'));
+  }
+  if (pickupForOtherRadio) {
+    pickupForOtherRadio.addEventListener('change', () => setPickupRecipient('other'));
+  }
+  if (pickupForSelfLabel) {
+    pickupForSelfLabel.addEventListener('click', () => setPickupRecipient('self'));
+  }
+  if (pickupForOtherLabel) {
+    pickupForOtherLabel.addEventListener('click', () => setPickupRecipient('other'));
+  }
 
   function setFulfillmentMode(mode) {
     currentFulfillmentType = mode;
@@ -2409,14 +2465,20 @@ function initCheckoutFlow() {
       }
     }
 
-    if (deliveryFields && pickupInfoBox) {
-      deliveryFields.style.display = isPickup ? 'none' : 'block';
-      pickupInfoBox.style.display = isPickup ? 'block' : 'none';
+    if (deliverySectionWrap && pickupOptionsSection) {
+      deliverySectionWrap.style.display = isPickup ? 'none' : 'block';
+      pickupOptionsSection.style.display = isPickup ? 'block' : 'none';
     }
 
     if (citySelect && detailedAddress) {
       citySelect.required = !isPickup;
       detailedAddress.required = !isPickup;
+    }
+
+    if (isPickup) {
+      setPickupRecipient(currentPickupRecipient);
+    } else {
+      if (pickupRecipientName) pickupRecipientName.required = false;
     }
 
     if (labelDeliveryDate) {
@@ -2526,12 +2588,34 @@ function initCheckoutFlow() {
       const deliveryFee = isPickup ? 0.0 : 3.0;
       const total = subtotal + deliveryFee;
 
+      const buyerNameVal = document.getElementById('buyer-name').value.trim();
+      const buyerPhoneVal = document.getElementById('buyer-phone').value.trim();
+
+      let recipientNameVal = buyerNameVal;
+      let recipientPhoneVal = buyerPhoneVal;
+
+      if (isPickup) {
+        if (currentPickupRecipient === 'other') {
+          recipientNameVal = (pickupRecipientName && pickupRecipientName.value.trim()) || buyerNameVal;
+          recipientPhoneVal = (pickupRecipientPhone && pickupRecipientPhone.value.trim()) || buyerPhoneVal;
+        } else {
+          recipientNameVal = buyerNameVal;
+          recipientPhoneVal = buyerPhoneVal;
+        }
+      } else {
+        const delivRecipName = document.getElementById('recipient-name');
+        const delivRecipPhone = document.getElementById('recipient-phone');
+        recipientNameVal = (delivRecipName && delivRecipName.value.trim()) || buyerNameVal;
+        recipientPhoneVal = (delivRecipPhone && delivRecipPhone.value.trim()) || buyerPhoneVal;
+      }
+
       const orderDetails = {
-        buyerName: document.getElementById('buyer-name').value.trim(),
-        buyerPhone: document.getElementById('buyer-phone').value.trim(),
-        recipientName: document.getElementById('recipient-name').value.trim(),
-        recipientPhone: document.getElementById('recipient-phone').value.trim(),
+        buyerName: buyerNameVal,
+        buyerPhone: buyerPhoneVal,
+        recipientName: recipientNameVal,
+        recipientPhone: recipientPhoneVal,
         fulfillmentType: currentFulfillmentType,
+        pickupSubmode: isPickup ? currentPickupRecipient : null,
         city: isPickup ? 'عمان - استلام من الفرع' : (citySelect ? citySelect.value : 'عمان'),
         address: isPickup ? 'استلام شخصي من المحل (الفرع الرئيسي - الجبيهة)' : (detailedAddress ? detailedAddress.value.trim() : ''),
         deliveryDate: document.getElementById('delivery-date').value,

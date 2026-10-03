@@ -365,54 +365,19 @@
       </div>
 
       <form id="checkout-form" class="checkout-modal-body">
-        <!-- Section 1: Buyer Info -->
+        <!-- 1. Fulfillment Mode: Delivery vs Store Pickup (Top Choice) -->
         <div class="form-group-section">
           <div class="form-section-title">
-            <span>👤</span> بيانات المشتري
-          </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label for="buyer-name">اسم المشتري الكريم <span class="req">*</span></label>
-              <input type="text" id="buyer-name" required placeholder="مثال: أحمد عبد الله">
-            </div>
-            <div class="form-field">
-              <label for="buyer-phone">رقم هاتف المشتري <span class="req">*</span></label>
-              <input type="tel" id="buyer-phone" required placeholder="مثال: 0791234567">
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 2: Recipient Info -->
-        <div class="form-group-section">
-          <div class="form-section-title">
-            <span>🎁</span> بيانات المستلم (المرسل إليه)
-          </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label for="recipient-name">اسم المستلم</label>
-              <input type="text" id="recipient-name" placeholder="اتركه فارغاً إذا كان الطلب لك شخصياً">
-            </div>
-            <div class="form-field">
-              <label for="recipient-phone">رقم هاتف المستلم</label>
-              <input type="tel" id="recipient-phone" placeholder="للتنسيق مع المستلم وقت الوصول">
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 3: Delivery or Pickup Choice & Schedule -->
-        <div class="form-group-section">
-          <div class="form-section-title">
-            <span>📍</span> طريقة الاستلام وموعد الطلب
+            <span>📦</span> طريقة استلام الطلب
           </div>
 
-          <!-- Fulfillment Toggle: Delivery vs Pickup -->
           <div class="fulfillment-type-selector">
             <label class="fulfillment-option-card active" id="option-delivery-label">
               <input type="radio" name="fulfillment-type" id="type-delivery" value="delivery" checked>
               <div class="opt-icon">🚗</div>
               <div class="opt-text">
                 <strong>توصيل إلى العنوان</strong>
-                <span>توصيل لباب بيتك أو للمستلم (+3.00 د.أ)</span>
+                <span>سائق معتمد يوصل للعنوان المطلوب (+3.00 د.أ)</span>
               </div>
             </label>
 
@@ -421,35 +386,102 @@
               <div class="opt-icon">🏬</div>
               <div class="opt-text">
                 <strong>استلام من المحل</strong>
-                <span>استلم باقتك بنفسك من الفرع (مجاناً 0 د.أ)</span>
+                <span>تجهيز الباقة للاستلام من الفرع (مجاناً 0 د.أ)</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. Buyer Info (Always Required) -->
+        <div class="form-group-section">
+          <div class="form-section-title">
+            <span>👤</span> بيانات المشتري (صاحب الطلب)
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="buyer-name">الاسم الكريم <span class="req">*</span></label>
+              <input type="text" id="buyer-name" required placeholder="مثال: أحمد عبد الله">
+            </div>
+            <div class="form-field">
+              <label for="buyer-phone">رقم هاتف المشتري (واتساب) <span class="req">*</span></label>
+              <input type="tel" id="buyer-phone" required placeholder="مثال: 0791234567">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3A. Pickup Recipient Sub-Option (Only shown when Pickup is chosen) -->
+        <div class="form-group-section" id="pickup-options-section" style="display:none;">
+          <div class="form-section-title">
+            <span>🎁</span> لمن هذا الطلب؟
+          </div>
+          <div class="pickup-recipient-selector">
+            <label class="pickup-suboption-card active" id="pickup-for-self-label">
+              <input type="radio" name="pickup-recipient-type" id="pickup-for-self" value="self" checked>
+              <span class="subopt-icon">🙋‍♂️</span>
+              <div class="subopt-text">
+                <strong>لي شخصياً (أنا سأستلم)</strong>
+                <span>نعتمد بياناتك أعلاه لتسليمك الباقة مباشرة</span>
+              </div>
+            </label>
+            <label class="pickup-suboption-card" id="pickup-for-other-label">
+              <input type="radio" name="pickup-recipient-type" id="pickup-for-other" value="other">
+              <span class="subopt-icon">💐</span>
+              <div class="subopt-text">
+                <strong>إهداء لشخص آخر</strong>
+                <span>شخص آخر سيستلم أو إهداء خاص</span>
               </div>
             </label>
           </div>
 
-          <!-- Date & Exact Time (Common to both Delivery and Pickup) -->
-          <div class="form-row" style="margin-top:10px;">
-            <div class="form-field">
-              <label for="delivery-date" id="label-delivery-date">تاريخ التوصيل المطلوب <span class="req">*</span></label>
-              <input type="date" id="delivery-date" required>
-            </div>
-            <div class="form-field">
-              <label for="delivery-exact-time" id="label-delivery-time">الساعة المحددة للتوصيل</label>
-              <input type="time" id="delivery-exact-time" value="18:00" title="حدد وقت التوصيل أو الاستلام بالساعة والدقيقة">
+          <!-- Pickup Recipient Details (Only shown if "other" is selected) -->
+          <div id="pickup-other-details" style="display:none; margin-top:14px;">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="pickup-recipient-name">اسم الشخص المستلم <span class="req">*</span></label>
+                <input type="text" id="pickup-recipient-name" placeholder="اسم من سيستلم الباقة من الفرع">
+              </div>
+              <div class="form-field">
+                <label for="pickup-recipient-phone">رقم هاتف المستلم</label>
+                <input type="tel" id="pickup-recipient-phone" placeholder="للتأكيد معه عند وصوله للمحل">
+              </div>
             </div>
           </div>
 
-          <div class="form-field" style="margin-bottom:12px;">
-            <label for="delivery-time">الفترة الزمنية المفضلة</label>
-            <select id="delivery-time">
-              <option value="صباحاً (10:00 ص - 1:00 م)">صباحاً (10:00 ص - 1:00 م)</option>
-              <option value="بعد الظهر (1:00 م - 5:00 م)">بعد الظهر (1:00 م - 5:00 م)</option>
-              <option value="مساءً (5:00 م - 9:00 م)" selected>مساءً (5:00 م - 9:00 م)</option>
-              <option value="في أقرب وقت ممكن">في أقرب وقت ممكن ⚡</option>
-            </select>
+          <!-- Store Pickup Information Box -->
+          <div id="pickup-store-info" class="pickup-store-info-box" style="margin-top:14px;">
+            <div class="store-badge">📍 موقع فرع الاستلام المعتمد</div>
+            <h4>متجر لين للزهور - Leen Flowers</h4>
+            <p><strong>العنوان:</strong> عمان - شمال عمان، الجبيهة / بالقرب من دوار المنهل والجامعة الأردنية</p>
+            <p><strong>ساعات العمل والاستلام:</strong> يومياً من الساعة 10:00 صباحاً حتى 11:00 مساءً</p>
+            <p><strong>تجهيز الباقة:</strong> سنقوم بتنسيق الباقة لتكون في ذروة نضارتها وجاهزة فور وصولك بالموعد المحدد 🌸</p>
+            <a href="https://maps.google.com/?q=32.0200,35.8700" target="_blank" rel="noopener" class="btn-store-map-link">
+              <span>🗺️ فتح موقع المحل على خرائط Google</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 3B. Delivery Recipient & Address (Only shown when Delivery is chosen) -->
+        <div id="delivery-section-wrap">
+          <div class="form-group-section">
+            <div class="form-section-title">
+              <span>🎁</span> بيانات المستلم (المرسل إليه)
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="recipient-name">اسم المستلم</label>
+                <input type="text" id="recipient-name" placeholder="اتركه فارغاً إذا كان التوصيل لك شخصياً">
+              </div>
+              <div class="form-field">
+                <label for="recipient-phone">رقم هاتف المستلم</label>
+                <input type="tel" id="recipient-phone" placeholder="للتنسيق مع المستلم وقت وصول السائق">
+              </div>
+            </div>
           </div>
 
-          <!-- Delivery Specific Fields (Hidden when Pickup is chosen) -->
-          <div id="delivery-specific-fields">
+          <div class="form-group-section">
+            <div class="form-section-title">
+              <span>📍</span> موقع وعنوان التوصيل
+            </div>
             <div class="form-field">
               <label for="city-select">المدينة / المنطقة في الأردن <span class="req">*</span></label>
               <select id="city-select" required>
@@ -474,17 +506,32 @@
               <small style="color:var(--text-muted); font-size:0.78rem;">يصل لسائق التوصيل مباشرة لضمان الوصول بأسرع وقت</small>
             </div>
           </div>
+        </div>
 
-          <!-- Store Pickup Information Box (Visible when Pickup is chosen) -->
-          <div id="pickup-store-info" class="pickup-store-info-box" style="display:none;">
-            <div class="store-badge">📍 عنوان فرع الاستلام المعتمد</div>
-            <h4>متجر لين للزهور - Leen Flowers</h4>
-            <p><strong>العنوان:</strong> عمان - شمال عمان، الجبيهة / بالقرب من دوار المنهل والجامعة الأردنية</p>
-            <p><strong>ساعات العمل والاستلام:</strong> يومياً من الساعة 10:00 صباحاً حتى 11:00 مساءً</p>
-            <p><strong>تجهيز الباقة:</strong> سيتم تجهيز وتنسيق باقتك لتكون في أبهى نضارة وجاهزة فور وصولك بالموعد المحدد 🌸</p>
-            <a href="https://maps.google.com/?q=32.0200,35.8700" target="_blank" rel="noopener" class="btn-store-map-link">
-              <span>🗺️ فتح موقع المحل على خرائط Google</span>
-            </a>
+        <!-- 4. Date & Exact Time (Common to both Delivery and Pickup) -->
+        <div class="form-group-section">
+          <div class="form-section-title">
+            <span>⏰</span> موعد وتوقيت الطلب
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="delivery-date" id="label-delivery-date">تاريخ التوصيل المطلوب <span class="req">*</span></label>
+              <input type="date" id="delivery-date" required>
+            </div>
+            <div class="form-field">
+              <label for="delivery-exact-time" id="label-delivery-time">الساعة المحددة للتوصيل</label>
+              <input type="time" id="delivery-exact-time" value="18:00" title="حدد وقت التوصيل أو الاستلام بالساعة والدقيقة">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="delivery-time">الفترة الزمنية المفضلة</label>
+            <select id="delivery-time">
+              <option value="صباحاً (10:00 ص - 1:00 م)">صباحاً (10:00 ص - 1:00 م)</option>
+              <option value="بعد الظهر (1:00 م - 5:00 م)">بعد الظهر (1:00 م - 5:00 م)</option>
+              <option value="مساءً (5:00 م - 9:00 م)" selected>مساءً (5:00 م - 9:00 م)</option>
+              <option value="في أقرب وقت ممكن">في أقرب وقت ممكن ⚡</option>
+            </select>
           </div>
         </div>
 
