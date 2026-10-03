@@ -375,15 +375,21 @@ export const ProductsDb = {
   create(prod) {
     const now = new Date().toISOString();
     const id = prod.id || `lf-${Date.now()}`;
+    const imagesList = Array.isArray(prod.images) && prod.images.length > 0
+      ? prod.images
+      : (prod.image ? [prod.image] : []);
+    const imagesJson = JSON.stringify(imagesList);
+    const primaryImage = imagesList[0] || prod.image || '';
+
     getDb().prepare(`
       INSERT INTO products (
-        id, title, category, price, oldPrice, badge, image, description,
+        id, title, category, price, oldPrice, badge, image, images, description,
         flowerType, flowerCount, dimensions, packaging, freshness, careTips,
         inStock, featured, createdAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       id, prod.title, prod.category, prod.price, prod.oldPrice || null,
-      prod.badge || '', prod.image || '', prod.description || '',
+      prod.badge || '', primaryImage, imagesJson, prod.description || '',
       prod.flowerType || '', prod.flowerCount || '', prod.dimensions || '',
       prod.packaging || '', prod.freshness || '', prod.careTips || '',
       prod.inStock ? 1 : 0, prod.featured ? 1 : 0, now
@@ -394,16 +400,22 @@ export const ProductsDb = {
     const current = this.getById(id);
     if (!current) return null;
     const merged = { ...current, ...prod };
+    const imagesList = Array.isArray(merged.images) && merged.images.length > 0
+      ? merged.images
+      : (merged.image ? [merged.image] : []);
+    const imagesJson = JSON.stringify(imagesList);
+    const primaryImage = imagesList[0] || merged.image || '';
+
     getDb().prepare(`
       UPDATE products SET
         title = ?, category = ?, price = ?, oldPrice = ?, badge = ?,
-        image = ?, description = ?, flowerType = ?, flowerCount = ?,
+        image = ?, images = ?, description = ?, flowerType = ?, flowerCount = ?,
         dimensions = ?, packaging = ?, freshness = ?, careTips = ?,
         inStock = ?, featured = ?
       WHERE id = ?
     `).run(
       merged.title, merged.category, merged.price, merged.oldPrice, merged.badge,
-      merged.image, merged.description, merged.flowerType, merged.flowerCount,
+      primaryImage, imagesJson, merged.description, merged.flowerType, merged.flowerCount,
       merged.dimensions, merged.packaging, merged.freshness, merged.careTips,
       merged.inStock ? 1 : 0, merged.featured ? 1 : 0, id
     );

@@ -165,6 +165,36 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
+      // 5. Upload Image: POST /api/upload
+      if (pathname === '/api/upload' && req.method === 'POST') {
+        const body = await parseBody(req);
+        if (!body.data) {
+          return sendJson(res, 400, { error: 'بيانات الصورة مطلوبة' });
+        }
+
+        const match = body.data.match(/^data:image\/([a-zA-Z0-9-+.]+);base64,(.+)$/);
+        let ext = 'jpg';
+        let buffer;
+        if (match) {
+          ext = match[1].replace('jpeg', 'jpg');
+          buffer = Buffer.from(match[2], 'base64');
+        } else {
+          buffer = Buffer.from(body.data, 'base64');
+        }
+
+        const uploadsDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
+        const filename = `flower-${Date.now()}-${Math.floor(Math.random() * 10000)}.${ext}`;
+        const targetPath = path.join(uploadsDir, filename);
+        fs.writeFileSync(targetPath, buffer);
+
+        const url = `/uploads/${filename}`;
+        return sendJson(res, 200, { success: true, url, filename });
+      }
+
       // 5. Orders: /api/orders
       if (pathname === '/api/orders') {
         // Public order placement from storefront checkout

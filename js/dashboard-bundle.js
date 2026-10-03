@@ -130,6 +130,15 @@ const ApiClient = {
     return this.request('DELETE', `/api/products/${id}`, null, true);
   },
 
+  async uploadImage(base64Data) {
+    try {
+      return await this.request('POST', '/api/upload', { data: base64Data }, true);
+    } catch (err) {
+      console.warn('API uploadImage fallback:', err.message);
+      return { success: true, url: base64Data };
+    }
+  },
+
   // --- Orders Endpoints ---
   async getOrders() {
     try {
@@ -700,8 +709,16 @@ function initProductsTable() {
   const modalIcon = document.getElementById('modal-product-icon');
   const modalTitle = document.getElementById('modal-product-title');
   const submitBtnText = document.getElementById('btn-submit-product-text');
-  const previewImage = document.getElementById('preview-prod-image');
-  const inputImage = document.getElementById('new-prod-image');
+
+  // Image Album & Upload Controls
+  const dropzone = document.getElementById('image-upload-dropzone');
+  const fileInput = document.getElementById('local-file-upload-input');
+  const urlInput = document.getElementById('new-prod-image-url-input');
+  const btnAddUrl = document.getElementById('btn-add-image-url');
+  const albumGrid = document.getElementById('album-thumbnails-grid');
+  const albumCount = document.getElementById('album-count');
+
+  let modalImagesList = [];
 
   // Toolbar & Filter Controls
   const searchInput = document.getElementById('dash-prod-search');
@@ -874,12 +891,152 @@ function initProductsTable() {
     });
   }
 
-  // Live Image Preview in Modal
-  if (inputImage && previewImage) {
-    inputImage.addEventListener('input', () => {
-      const url = inputImage.value.trim();
-      if (url) {
-        previewImage.src = url;
+  // Album Rendering
+  function renderAlbumThumbnails() {
+    if (albumCount) albumCount.textContent = modalImagesList.length;
+    if (!albumGrid) return;
+
+    if (modalImagesList.length === 0) {
+      albumGrid.innerHTML = `
+        <div class="album-empty-notice">
+          لم يتم إضافة أي صور بعد. اسحب صوراً من جهازك أو أضف روابط بالأعلى.
+        </div>
+      `;
+      return;
+    }
+
+    albumGrid.innerHTML = modalImagesList.map((imgUrl, idx) => `
+      <div class="album-thumb-card ${idx === 0 ? 'is-primary' : ''}">
+        <img src="${imgUrl}" alt="صورة ${idx + 1}" onerror="this.src='https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'">
+        ${idx === 0 ? '<span class="album-primary-badge">الرئيسية ⭐</span>' : ''}
+        <div class="album-thumb-overlay">
+          ${idx !== 0 ? `<button type="button" class="album-thumb-btn make-primary" data-action="set-primary" data-idx="${idx}" title="تعيين كصورة رئيسية">⭐</button>` : ''}
+          <button type="button" class="album-thumb-btn delete" data-action="remove-img" data-idx="${idx}" title="حذف من الألبوم">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Album Action Clicks (Set Primary / Remove Image)
+  if (albumGrid) {
+    albumGrid.addEventListener('click', e => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.idx, 10);
+      const action = btn.dataset.action;
+
+      if (action === 'set-primary' && idx > 0 && idx < modalImagesList.length) {
+        const item = modalImagesList.splice(idx, 1)[0];
+        modalImagesList.unshift(item);
+        renderAlbumThumbnails();
+        showToast('تم تعيين الصورة كصورة رئيسية للمتجر ⭐');
+      }
+
+      if (action === 'remove-img' && idx >= 0 && idx < modalImagesList.length) {
+        modalImagesList.splice(idx, 1);
+        renderAlbumThumbnails();
+        showToast('تمت إزالة الصورة من الألبوم 🗑️');
+      }
+    });
+  }
+
+  // Local File Upload / Dropzone
+  function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleImageFiles(files) {
+    const fileArr = Array.from(files).filter(f => f.type.startsWith('image/'));
+    if (fileArr.length === 0) {
+      showToast('يرجى اختيار ملفات صور صالحة (PNG, JPG, WebP)');
+      return;
+    }
+
+    showToast(`جاري معالجة ورفع ${fileArr.length} صور للألبوم... ⏳`);
+
+    for (const file of fileArr) {
+      try {
+        const base64 = await readFileAsBase64(file);
+        let uploadedUrl = base64;
+        try {
+          const res = await ApiClient.uploadImage(base64);
+          if (res && res.url) {
+            uploadedUrl = res.url;
+          }
+        } catch (_) {}
+        modalImagesList.push(uploadedUrl);
+      } catch (err) {
+        console.warn('Error uploading file:', err);
+      }
+    }
+
+    renderAlbumThumbnails();
+    showToast(`تمت إضافة ${fileArr.length} صور إلى الألبوم بنجاح! 📸`);
+  }
+
+  if (dropzone && fileInput) {
+    dropzone.addEventListener('click', e => {
+      if (e.target.tagName !== 'INPUT') {
+        fileInput.click();
+      }
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('dragover');
+      });
+    });
+
+    dropzone.addEventListener('drop', e => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files.length > 0) {
+        handleImageFiles(files);
+      }
+    });
+
+    fileInput.addEventListener('change', e => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleImageFiles(e.target.files);
+        fileInput.value = '';
+      }
+    });
+  }
+
+  // Add URL Input
+  if (btnAddUrl && urlInput) {
+    btnAddUrl.addEventListener('click', () => {
+      const url = urlInput.value.trim();
+      if (!url) {
+        showToast('يرجى كتابة أو لصق رابط الصورة أولاً!');
+        urlInput.focus();
+        return;
+      }
+      modalImagesList.push(url);
+      urlInput.value = '';
+      renderAlbumThumbnails();
+      showToast('تمت إضافة رابط الصورة إلى الألبوم ✨');
+    });
+
+    urlInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        btnAddUrl.click();
       }
     });
   }
@@ -892,12 +1049,11 @@ function initProductsTable() {
     if (modalIcon) modalIcon.textContent = '🌹';
     if (modalTitle) modalTitle.textContent = 'إضافة باقة ورد / منتج جديد';
     if (submitBtnText) submitBtnText.textContent = 'حفظ وإضافة للمتجر';
-    if (previewImage) {
-      previewImage.src = 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80';
-    }
-    if (inputImage) {
-      inputImage.value = 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80';
-    }
+    
+    // Default initial image for new product
+    modalImagesList = ['https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80'];
+    renderAlbumThumbnails();
+
     addModalOverlay.classList.add('active');
   }
 
@@ -916,7 +1072,6 @@ function initProductsTable() {
     document.getElementById('new-prod-price').value = prod.price || '';
     document.getElementById('new-prod-old-price').value = prod.oldPrice || '';
     document.getElementById('new-prod-badge').value = prod.badge || '';
-    document.getElementById('new-prod-image').value = prod.image || '';
     document.getElementById('new-prod-desc').value = prod.description || '';
 
     const featuredCheckbox = document.getElementById('new-prod-featured');
@@ -924,9 +1079,15 @@ function initProductsTable() {
       featuredCheckbox.checked = Boolean(prod.featured);
     }
 
-    if (previewImage) {
-      previewImage.src = prod.image || '';
+    // Populate album images
+    if (Array.isArray(prod.images) && prod.images.length > 0) {
+      modalImagesList = [...prod.images];
+    } else if (prod.image) {
+      modalImagesList = [prod.image];
+    } else {
+      modalImagesList = [];
     }
+    renderAlbumThumbnails();
 
     addModalOverlay.classList.add('active');
   }
@@ -1013,11 +1174,18 @@ function initProductsTable() {
       const oldPriceVal = document.getElementById('new-prod-old-price').value.trim();
       const oldPrice = oldPriceVal ? parseFloat(oldPriceVal) : null;
       const badge = document.getElementById('new-prod-badge').value.trim();
-      const image = document.getElementById('new-prod-image').value.trim();
       const description = document.getElementById('new-prod-desc').value.trim();
       const featured = document.getElementById('new-prod-featured')
         ? document.getElementById('new-prod-featured').checked
         : false;
+
+      if (modalImagesList.length === 0) {
+        showToast('يرجى إضافة صورة واحدة على الأقل للباقة (عبر الرفع أو الرابط)!');
+        return;
+      }
+
+      const primaryImage = modalImagesList[0];
+      const imagesArray = [...modalImagesList];
 
       if (isEditing) {
         // UPDATE EXISTING PRODUCT
@@ -1028,7 +1196,8 @@ function initProductsTable() {
           price,
           oldPrice,
           badge,
-          image,
+          image: primaryImage,
+          images: imagesArray,
           description,
           featured
         };
@@ -1054,7 +1223,8 @@ function initProductsTable() {
           price,
           oldPrice,
           badge,
-          image,
+          image: primaryImage,
+          images: imagesArray,
           description,
           flowerType: 'تشكيلة زهور طبيعية فاخرة',
           flowerCount: 'تنسيق متناسق ومتقن',

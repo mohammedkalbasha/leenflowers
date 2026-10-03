@@ -122,6 +122,15 @@ export const ApiClient = {
     return this.request('DELETE', `/api/products/${id}`, null, true);
   },
 
+  async uploadImage(base64Data) {
+    try {
+      return await this.request('POST', '/api/upload', { data: base64Data }, true);
+    } catch (err) {
+      console.warn('API uploadImage fallback:', err.message);
+      return { success: true, url: base64Data };
+    }
+  },
+
   // --- Orders Endpoints ---
   async getOrders() {
     try {

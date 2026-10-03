@@ -290,12 +290,38 @@
           </div>
         </div>
 
-        <div class="form-field">
-          <label for="new-prod-image">رابط صورة الورد (URL) <span class="req">*</span></label>
-          <div class="image-input-preview-group">
-            <input type="url" id="new-prod-image" required placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80">
-            <div class="image-preview-box" id="image-preview-box">
-              <img id="preview-prod-image" src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80" alt="معاينة الصورة" onerror="this.src='https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'">
+        <!-- Section: Product Images Album & Local Upload -->
+        <div class="form-group-section" style="background:var(--bg-main); border:1px solid var(--card-border); border-radius:14px; padding:14px; margin-bottom:12px;">
+          <div class="form-section-title" style="margin-bottom:8px; font-weight:700;">
+            <span>📸</span> ألبوم صور الباقة (رفع وإضافة أكثر من صورة)
+          </div>
+
+          <!-- 1. Drag & Drop or File Upload from Computer -->
+          <div class="image-upload-dropzone" id="image-upload-dropzone" tabindex="0">
+            <input type="file" id="local-file-upload-input" multiple accept="image/png, image/jpeg, image/jpg, image/webp" style="display:none;">
+            <div class="dropzone-content">
+              <span class="dropzone-icon">📁</span>
+              <strong>اسحب وأفلت الصور هنا أو <span class="dropzone-link">اختر من جهازك</span></strong>
+              <small>يمكنك اختيار عدة صور في نفس الوقت (JPG, PNG, WebP) لعرض ألبوم متكامل</small>
+            </div>
+          </div>
+
+          <!-- 2. Or Paste an External Image URL -->
+          <div class="image-url-add-row" style="margin-top:12px;">
+            <input type="url" id="new-prod-image-url-input" placeholder="أو الصق رابط صورة (URL) مثل Unsplash واضغط إضافة...">
+            <button type="button" class="dash-btn-outline" id="btn-add-image-url" style="white-space:nowrap; padding:8px 14px;">
+              <span>+ إضافة الرابط</span>
+            </button>
+          </div>
+
+          <!-- 3. Current Product Album Thumbnails Manager -->
+          <div class="product-album-manager" id="product-album-manager" style="margin-top:14px;">
+            <div class="album-manager-header">
+              <span>🖼️ صور الألبوم المرفوعة (<strong id="album-count">0</strong> صور):</span>
+              <small style="display:block; color:var(--text-muted); font-size:0.75rem; margin-top:2px;">الصورة الأولى هي الصورة الرئيسية للمتجر ⭐ (اضغط على أي صورة لجعلها الرئيسية أو لحذفها)</small>
+            </div>
+            <div class="album-thumbnails-grid" id="album-thumbnails-grid">
+              <!-- Rendered dynamically -->
             </div>
           </div>
         </div>
