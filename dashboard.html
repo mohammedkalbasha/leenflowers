@@ -151,9 +151,12 @@
     <!-- Products Management Card -->
     <div class="dashboard-card">
       <div class="dash-card-header">
-        <h3>🌹 <span>إدارة باقات الزهور والمنتجات (قاعدة البيانات الدائمة)</span></h3>
+        <div class="dash-card-title-group">
+          <h3>🌹 <span>إدارة باقات الزهور والمنتجات (قاعدة البيانات الدائمة)</span></h3>
+          <p class="dash-card-desc">تحكم كامل بالأسعار، الصور، الأقسام، وحالة التوفر بالمحل في الوقت الفعلي</p>
+        </div>
         <div class="dash-card-actions">
-          <button type="button" class="dash-btn-outline" id="btn-reset-products">
+          <button type="button" class="dash-btn-outline" id="btn-reset-products" title="استعادة الباقات الافتراضية لقاعدة البيانات">
             <span>استعادة الافتراضية</span> 🔄
           </button>
           <button type="button" class="dash-btn-primary" id="btn-open-add-product">
@@ -162,16 +165,45 @@
         </div>
       </div>
 
+      <!-- Products Filter & Search Toolbar -->
+      <div class="dash-products-toolbar">
+        <div class="dash-search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="dash-prod-search" placeholder="بحث بالاسم أو القسم أو الوصف...">
+          <button type="button" id="dash-prod-search-clear" class="btn-clear-search" style="display:none;" title="مسح">✕</button>
+        </div>
+
+        <div class="dash-filter-group">
+          <select id="dash-prod-cat-filter" class="dash-select-filter">
+            <option value="all">🌸 جميع الأقسام والتصنيفات</option>
+            <option value="natural-bouquets">باقات ورد طبيعي</option>
+            <option value="gift-boxes">بوكسات ورد وهدايا</option>
+            <option value="vases">فازات واستاندات فاخرة</option>
+            <option value="occasions">مناسبات وأعراس وتخرج</option>
+          </select>
+
+          <select id="dash-prod-stock-filter" class="dash-select-filter">
+            <option value="all">📦 كل حالات التوفر</option>
+            <option value="in">🟢 متوفر فقط بالمحل</option>
+            <option value="out">🔴 غير متوفر (نفد)</option>
+          </select>
+        </div>
+
+        <div class="dash-prod-counter" id="dash-prod-counter">
+          المعروض: <strong>0</strong> باقة
+        </div>
+      </div>
+
       <div class="table-responsive">
-        <table class="dash-table">
+        <table class="dash-table products-table">
           <thead>
             <tr>
-              <th>الصورة</th>
-              <th>اسم الباقة / المنتج</th>
-              <th>القسم</th>
-              <th>السعر الحالي</th>
-              <th>الحالة</th>
-              <th>الإجراءات</th>
+              <th style="width: 76px; text-align:center;">الصورة</th>
+              <th style="min-width: 220px;">اسم الباقة / التفاصيل</th>
+              <th style="min-width: 140px;">القسم</th>
+              <th style="min-width: 110px;">السعر</th>
+              <th style="min-width: 140px; text-align:center;">حالة التوفر (انقر للتغيير)</th>
+              <th style="width: 160px; text-align:center;">الإجراءات</th>
             </tr>
           </thead>
           <tbody id="dashboard-products-tbody">
@@ -215,18 +247,20 @@
 
   </main>
 
-  <!-- Add Product Modal -->
+  <!-- Add / Edit Product Modal -->
   <div class="checkout-modal-overlay" id="add-product-modal-overlay">
-    <div class="checkout-modal">
+    <div class="checkout-modal" style="max-width: 640px;">
       <div class="checkout-modal-head">
-        <h3>🌹 <span>إضافة باقة ورد / منتج جديد</span></h3>
+        <h3><span id="modal-product-icon">🌹</span> <span id="modal-product-title">إضافة باقة ورد / منتج جديد</span></h3>
         <button type="button" class="btn-close-drawer" id="close-add-modal-btn">✕</button>
       </div>
 
       <form id="add-product-form" class="checkout-modal-body">
+        <input type="hidden" id="edit-prod-id" value="">
+
         <div class="form-field">
           <label for="new-prod-title">اسم الباقة أو الهدية <span class="req">*</span></label>
-          <input type="text" id="new-prod-title" required placeholder="مثال: باقة ربيع الأحلام">
+          <input type="text" id="new-prod-title" required placeholder="مثال: باقة ربيع الأحلام المخملية">
         </div>
 
         <div class="form-row">
@@ -240,29 +274,49 @@
             </select>
           </div>
           <div class="form-field">
-            <label for="new-prod-price">السعر بالدينار الأردني (JOD) <span class="req">*</span></label>
+            <label for="new-prod-price">السعر الحالي (د.أ) <span class="req">*</span></label>
             <input type="number" id="new-prod-price" step="0.5" min="1" required placeholder="مثال: 30.0">
           </div>
         </div>
 
-        <div class="form-field">
-          <label for="new-prod-badge">شارة مميزة (Badge)</label>
-          <input type="text" id="new-prod-badge" placeholder="مثال: حصري ✨ / الأكثر طلباً ⭐">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="new-prod-old-price">السعر قبل الخصم (اختياري)</label>
+            <input type="number" id="new-prod-old-price" step="0.5" min="0" placeholder="مثال: 35.0 (سيظهر مشطوباً)">
+          </div>
+          <div class="form-field">
+            <label for="new-prod-badge">شارة مميزة (Badge)</label>
+            <input type="text" id="new-prod-badge" placeholder="مثال: حصري ✨ / الأكثر طلباً ⭐">
+          </div>
         </div>
 
         <div class="form-field">
           <label for="new-prod-image">رابط صورة الورد (URL) <span class="req">*</span></label>
-          <input type="url" id="new-prod-image" required placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80">
+          <div class="image-input-preview-group">
+            <input type="url" id="new-prod-image" required placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80">
+            <div class="image-preview-box" id="image-preview-box">
+              <img id="preview-prod-image" src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80" alt="معاينة الصورة" onerror="this.src='https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'">
+            </div>
+          </div>
         </div>
 
         <div class="form-field">
-          <label for="new-prod-desc">الوصف التفصيلي للباقة <span class="req">*</span></label>
+          <label for="new-prod-desc">الوصف ومحتويات الباقة <span class="req">*</span></label>
           <textarea id="new-prod-desc" rows="3" required placeholder="محتويات الباقة، نوع الورد، طريقة التغليف..."></textarea>
         </div>
 
-        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:14px;">
-          <button type="submit" class="dash-btn-primary">
-            <span>حفظ وإضافة للمتجر</span> ✨
+        <div class="form-field" style="margin-top: 10px;">
+          <label class="toggle-switch-label" for="new-prod-featured" style="cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="new-prod-featured" class="toggle-checkbox">
+            <span class="toggle-slider"></span>
+            <span style="font-weight:600; font-size:0.9rem;">⭐ إبراز الباقة في القسم المميز بالصفحة الرئيسية</span>
+          </label>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:18px; border-top:1px solid var(--card-border); padding-top:14px;">
+          <button type="button" class="dash-btn-outline" id="btn-cancel-prod-modal">إلغاء</button>
+          <button type="submit" class="dash-btn-primary" id="btn-submit-product">
+            <span id="btn-submit-product-text">حفظ وإضافة للمتجر</span> ✨
           </button>
         </div>
       </form>

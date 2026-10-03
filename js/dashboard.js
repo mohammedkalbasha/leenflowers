@@ -171,7 +171,7 @@ function initSettingsForm() {
 }
 
 /**
- * Products Table & Add Product Modal
+ * Products Table & Add / Edit Product Modal
  */
 let cachedProducts = [];
 
@@ -181,10 +181,36 @@ function initProductsTable() {
   const openAddModalBtn = document.getElementById('btn-open-add-product');
   const addModalOverlay = document.getElementById('add-product-modal-overlay');
   const closeAddModalBtn = document.getElementById('close-add-modal-btn');
+  const cancelProdModalBtn = document.getElementById('btn-cancel-prod-modal');
   const addForm = document.getElementById('add-product-form');
 
-  async function renderProducts() {
-    if (!tbody) return;
+  // Modal Controls
+  const editProdIdInput = document.getElementById('edit-prod-id');
+  const modalIcon = document.getElementById('modal-product-icon');
+  const modalTitle = document.getElementById('modal-product-title');
+  const submitBtnText = document.getElementById('btn-submit-product-text');
+  const previewImage = document.getElementById('preview-prod-image');
+  const inputImage = document.getElementById('new-prod-image');
+
+  // Toolbar & Filter Controls
+  const searchInput = document.getElementById('dash-prod-search');
+  const clearSearchBtn = document.getElementById('dash-prod-search-clear');
+  const catFilter = document.getElementById('dash-prod-cat-filter');
+  const stockFilter = document.getElementById('dash-prod-stock-filter');
+  const counterDisplay = document.getElementById('dash-prod-counter');
+
+  let currentSearchQuery = '';
+  let currentCatFilter = 'all';
+  let currentStockFilter = 'all';
+
+  const catMap = {
+    'natural-bouquets': 'باقات ورد طبيعي',
+    'gift-boxes': 'بوكسات ورد وهدايا',
+    'vases': 'فازات واستاندات فاخرة',
+    'occasions': 'مناسبات وتخرج وأعراس'
+  };
+
+  async function loadProductsData() {
     try {
       const apiProds = await ApiClient.getProducts();
       if (apiProds && Array.isArray(apiProds)) {
@@ -195,55 +221,228 @@ function initProductsTable() {
     } catch (_) {
       cachedProducts = getProducts();
     }
+    renderProducts();
+  }
 
-    if (cachedProducts.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">لا توجد منتجات حالياً.</td></tr>`;
+  function getFilteredProducts() {
+    return cachedProducts.filter(p => {
+      // 1. Search Query
+      if (currentSearchQuery) {
+        const q = currentSearchQuery.toLowerCase();
+        const titleMatch = (p.title || '').toLowerCase().includes(q);
+        const descMatch = (p.description || '').toLowerCase().includes(q);
+        const badgeMatch = (p.badge || '').toLowerCase().includes(q);
+        const catNameMatch = (catMap[p.category] || '').toLowerCase().includes(q);
+        if (!titleMatch && !descMatch && !badgeMatch && !catNameMatch) return false;
+      }
+
+      // 2. Category Filter
+      if (currentCatFilter !== 'all' && p.category !== currentCatFilter) {
+        return false;
+      }
+
+      // 3. Stock Filter
+      if (currentStockFilter === 'in' && !p.inStock) return false;
+      if (currentStockFilter === 'out' && p.inStock) return false;
+
+      return true;
+    });
+  }
+
+  function renderProducts() {
+    if (!tbody) return;
+
+    const filtered = getFilteredProducts();
+
+    // Update Counter
+    if (counterDisplay) {
+      counterDisplay.innerHTML = `المعروض: <strong>${filtered.length}</strong> من أصل ${cachedProducts.length} باقة`;
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; padding:36px 16px; color:var(--text-muted);">
+            <div style="font-size:2rem; margin-bottom:8px;">🔍</div>
+            <strong style="font-size:1.05rem; display:block; margin-bottom:4px;">لم يتم العثور على أي باقات مطابقة</strong>
+            <span style="font-size:0.85rem;">جرّب تعديل كلمات البحث أو تغيير الفلتر المختار</span>
+          </td>
+        </tr>
+      `;
       return;
     }
 
-    const catMap = {
-      'natural-bouquets': 'باقات ورد طبيعي',
-      'gift-boxes': 'بوكسات ورد وهدايا',
-      'vases': 'فازات واستاندات',
-      'occasions': 'أعراس ومناسبات'
-    };
+    tbody.innerHTML = filtered.map(p => {
+      const priceNum = parseFloat(p.price) || 0;
+      const oldPriceNum = p.oldPrice ? parseFloat(p.oldPrice) : null;
+      const catLabel = catMap[p.category] || p.category;
 
-    tbody.innerHTML = cachedProducts.map(p => `
-      <tr data-id="${p.id}">
-        <td>
-          <img src="${p.image}" alt="${p.title}" class="dash-prod-thumb" onerror="this.src='https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'">
-        </td>
-        <td>
-          <div style="font-weight:700;">${p.title}</div>
-          <div style="font-size:0.75rem; color:var(--text-muted);">${p.badge || ''}</div>
-        </td>
-        <td>
-          <span style="font-size:0.82rem; background:var(--badge-bg); color:var(--primary); padding:3px 8px; border-radius:12px;">
-            ${catMap[p.category] || p.category}
-          </span>
-        </td>
-        <td style="font-weight:700; color:var(--primary);">
-          ${parseFloat(p.price).toFixed(2)} د.أ
-        </td>
-        <td>
-          <button type="button" class="dash-btn-stock ${p.inStock ? 'in-stock' : 'out-stock'}" data-action="toggle-stock" data-id="${p.id}">
-            ${p.inStock ? 'متوفر ✓' : 'غير متوفر ✕'}
-          </button>
-        </td>
-        <td>
-          <button type="button" class="dash-btn-del" data-action="delete" data-id="${p.id}" title="حذف المنتج">
-            🗑️ حذف
-          </button>
-        </td>
-      </tr>
-    `).join('');
+      return `
+        <tr data-id="${p.id}">
+          <td class="dash-prod-thumb-cell">
+            <img src="${p.image}" alt="${p.title}" class="dash-prod-thumb" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'">
+          </td>
+          <td>
+            <div class="dash-prod-title-wrap">
+              <span class="dash-prod-title">${p.title}</span>
+              <div class="dash-prod-meta">
+                <span class="dash-prod-id">${p.id}</span>
+                ${p.badge ? `<span class="dash-prod-badge-tag">${p.badge}</span>` : ''}
+                ${p.featured ? `<span class="dash-prod-featured-tag">⭐ مميز</span>` : ''}
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="dash-cat-pill dash-cat-${p.category}">
+              ${catLabel}
+            </span>
+          </td>
+          <td>
+            <div class="dash-price-box">
+              <span class="dash-price-current">${priceNum.toFixed(2)} د.أ</span>
+              ${oldPriceNum ? `<span class="dash-price-old">${oldPriceNum.toFixed(2)} د.أ</span>` : ''}
+            </div>
+          </td>
+          <td style="text-align:center;">
+            <button type="button" class="dash-btn-stock ${p.inStock ? 'in-stock' : 'out-stock'}" data-action="toggle-stock" data-id="${p.id}" title="انقر لتغيير التوفر فوراً">
+              <span class="stock-dot"></span>
+              <span>${p.inStock ? 'متوفر بالمحل ✓' : 'نفد من المحل ✕'}</span>
+            </button>
+          </td>
+          <td>
+            <div class="dash-table-actions">
+              <button type="button" class="dash-btn-action dash-btn-edit" data-action="edit" data-id="${p.id}" title="تعديل بيانات وسعر الباقة">
+                ✏️ تعديل
+              </button>
+              <button type="button" class="dash-btn-action dash-btn-del" data-action="delete" data-id="${p.id}" title="حذف الباقة من المتجر">
+                🗑️ حذف
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
 
     updateDashboardStats();
   }
 
-  renderProducts();
+  loadProductsData();
 
-  // Action clicks (Toggle stock / Delete)
+  // Toolbar Listeners
+  if (searchInput) {
+    searchInput.addEventListener('input', e => {
+      currentSearchQuery = e.target.value.trim();
+      if (clearSearchBtn) {
+        clearSearchBtn.style.display = currentSearchQuery ? 'inline-block' : 'none';
+      }
+      renderProducts();
+    });
+  }
+
+  if (clearSearchBtn && searchInput) {
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      currentSearchQuery = '';
+      clearSearchBtn.style.display = 'none';
+      searchInput.focus();
+      renderProducts();
+    });
+  }
+
+  if (catFilter) {
+    catFilter.addEventListener('change', e => {
+      currentCatFilter = e.target.value;
+      renderProducts();
+    });
+  }
+
+  if (stockFilter) {
+    stockFilter.addEventListener('change', e => {
+      currentStockFilter = e.target.value;
+      renderProducts();
+    });
+  }
+
+  // Live Image Preview in Modal
+  if (inputImage && previewImage) {
+    inputImage.addEventListener('input', () => {
+      const url = inputImage.value.trim();
+      if (url) {
+        previewImage.src = url;
+      }
+    });
+  }
+
+  // Open Add Product Modal (Create Mode)
+  function openAddModal() {
+    if (!addModalOverlay) return;
+    if (addForm) addForm.reset();
+    if (editProdIdInput) editProdIdInput.value = '';
+    if (modalIcon) modalIcon.textContent = '🌹';
+    if (modalTitle) modalTitle.textContent = 'إضافة باقة ورد / منتج جديد';
+    if (submitBtnText) submitBtnText.textContent = 'حفظ وإضافة للمتجر';
+    if (previewImage) {
+      previewImage.src = 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80';
+    }
+    if (inputImage) {
+      inputImage.value = 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80';
+    }
+    addModalOverlay.classList.add('active');
+  }
+
+  // Open Edit Product Modal (Edit Mode)
+  function openEditModal(prodId) {
+    const prod = cachedProducts.find(x => x.id === prodId);
+    if (!prod || !addModalOverlay) return;
+
+    if (editProdIdInput) editProdIdInput.value = prod.id;
+    if (modalIcon) modalIcon.textContent = '✏️';
+    if (modalTitle) modalTitle.textContent = `تعديل بيانات: ${prod.title}`;
+    if (submitBtnText) submitBtnText.textContent = 'حفظ التعديلات';
+
+    document.getElementById('new-prod-title').value = prod.title || '';
+    document.getElementById('new-prod-category').value = prod.category || 'natural-bouquets';
+    document.getElementById('new-prod-price').value = prod.price || '';
+    document.getElementById('new-prod-old-price').value = prod.oldPrice || '';
+    document.getElementById('new-prod-badge').value = prod.badge || '';
+    document.getElementById('new-prod-image').value = prod.image || '';
+    document.getElementById('new-prod-desc').value = prod.description || '';
+
+    const featuredCheckbox = document.getElementById('new-prod-featured');
+    if (featuredCheckbox) {
+      featuredCheckbox.checked = Boolean(prod.featured);
+    }
+
+    if (previewImage) {
+      previewImage.src = prod.image || '';
+    }
+
+    addModalOverlay.classList.add('active');
+  }
+
+  function closeProductModal() {
+    if (addModalOverlay) addModalOverlay.classList.remove('active');
+  }
+
+  if (openAddModalBtn) {
+    openAddModalBtn.addEventListener('click', openAddModal);
+  }
+
+  if (closeAddModalBtn) {
+    closeAddModalBtn.addEventListener('click', closeProductModal);
+  }
+
+  if (cancelProdModalBtn) {
+    cancelProdModalBtn.addEventListener('click', closeProductModal);
+  }
+
+  if (addModalOverlay) {
+    addModalOverlay.addEventListener('click', e => {
+      if (e.target === addModalOverlay) closeProductModal();
+    });
+  }
+
+  // Table Action Clicks (Toggle Stock / Edit / Delete)
   if (tbody) {
     tbody.addEventListener('click', async e => {
       const btn = e.target.closest('button[data-action]');
@@ -252,6 +451,7 @@ function initProductsTable() {
       const action = btn.dataset.action;
       const id = btn.dataset.id;
 
+      // 1. Toggle In Stock
       if (action === 'toggle-stock') {
         const prod = cachedProducts.find(x => x.id === id);
         if (prod) {
@@ -261,85 +461,117 @@ function initProductsTable() {
           } catch (_) {}
           saveProducts(cachedProducts);
           renderProducts();
-          showToast(`تم تحديث حالة توفر المنتج: ${prod.title}`);
+          const stateText = prod.inStock ? 'متوفر بالمحل' : 'غير متوفر (نفد)';
+          showToast(`تم تحديث حالة [${prod.title}] إلى: ${stateText}`);
         }
       }
 
+      // 2. Edit Product
+      if (action === 'edit') {
+        openEditModal(id);
+      }
+
+      // 3. Delete Product
       if (action === 'delete') {
-        if (confirm('هل أنت متأكد من رغبتك بحذف هذا المنتج؟')) {
+        const prod = cachedProducts.find(x => x.id === id);
+        const name = prod ? prod.title : id;
+        if (confirm(`هل أنت متأكد من رغبتك بحذف المنتج [${name}] بشكل نهائي؟`)) {
           try {
             await ApiClient.deleteProduct(id);
           } catch (_) {}
           cachedProducts = cachedProducts.filter(x => x.id !== id);
           saveProducts(cachedProducts);
           renderProducts();
-          showToast('تم حذف المنتج بنجاح 🗑️');
+          showToast(`تم حذف المنتج [${name}] بنجاح 🗑️`);
         }
       }
     });
   }
 
-  // Open modal
-  if (openAddModalBtn && addModalOverlay) {
-    openAddModalBtn.addEventListener('click', () => {
-      addModalOverlay.classList.add('active');
-    });
-  }
-
-  // Close modal
-  if (closeAddModalBtn && addModalOverlay) {
-    closeAddModalBtn.addEventListener('click', () => {
-      addModalOverlay.classList.remove('active');
-    });
-  }
-
-  // Form submit (Add product)
+  // Form Submit (Create or Update Product)
   if (addForm) {
     addForm.addEventListener('submit', async e => {
       e.preventDefault();
+
+      const editId = editProdIdInput ? editProdIdInput.value.trim() : '';
+      const isEditing = Boolean(editId);
+
       const title = document.getElementById('new-prod-title').value.trim();
       const category = document.getElementById('new-prod-category').value;
       const price = parseFloat(document.getElementById('new-prod-price').value);
+      const oldPriceVal = document.getElementById('new-prod-old-price').value.trim();
+      const oldPrice = oldPriceVal ? parseFloat(oldPriceVal) : null;
       const badge = document.getElementById('new-prod-badge').value.trim();
       const image = document.getElementById('new-prod-image').value.trim();
       const description = document.getElementById('new-prod-desc').value.trim();
+      const featured = document.getElementById('new-prod-featured')
+        ? document.getElementById('new-prod-featured').checked
+        : false;
 
-      const newProd = {
-        id: `lf-${Date.now()}`,
-        title,
-        category,
-        price,
-        oldPrice: null,
-        badge,
-        image,
-        description,
-        flowerType: 'تشكيلة زهور طبيعية فاخرة',
-        flowerCount: 'تنسيق متناسق ومتقن',
-        dimensions: 'الارتفاع 45 - 55 سم تقريباً',
-        packaging: 'تغليف فاخر مقاوم للماء وشريط ساتان',
-        freshness: '7 - 10 أيام مع العناية الموصى بها',
-        careTips: 'قص أطراف السيقان بزاوية 45 درجة، واستبدل الماء كل يومين.',
-        inStock: true,
-        featured: false
-      };
+      if (isEditing) {
+        // UPDATE EXISTING PRODUCT
+        const existingIdx = cachedProducts.findIndex(x => x.id === editId);
+        const updatedFields = {
+          title,
+          category,
+          price,
+          oldPrice,
+          badge,
+          image,
+          description,
+          featured
+        };
 
-      try {
-        await ApiClient.createProduct(newProd);
-      } catch (_) {}
-      cachedProducts.unshift(newProd);
-      saveProducts(cachedProducts);
-      renderProducts();
+        try {
+          await ApiClient.updateProduct(editId, updatedFields);
+        } catch (_) {}
 
-      addForm.reset();
-      if (addModalOverlay) addModalOverlay.classList.remove('active');
-      showToast('تمت إضافة الباقة الجديدة وحفظها بنجاح! 🌹');
+        if (existingIdx !== -1) {
+          cachedProducts[existingIdx] = { ...cachedProducts[existingIdx], ...updatedFields };
+        }
+
+        saveProducts(cachedProducts);
+        renderProducts();
+        closeProductModal();
+        showToast(`تم تحديث وحفظ بيانات [${title}] بنجاح! ✨`);
+      } else {
+        // CREATE NEW PRODUCT
+        const newProd = {
+          id: `lf-${Date.now()}`,
+          title,
+          category,
+          price,
+          oldPrice,
+          badge,
+          image,
+          description,
+          flowerType: 'تشكيلة زهور طبيعية فاخرة',
+          flowerCount: 'تنسيق متناسق ومتقن',
+          dimensions: 'الارتفاع 45 - 55 سم تقريباً',
+          packaging: 'تغليف فاخر مقاوم للماء وشريط ساتان',
+          freshness: '7 - 10 أيام مع العناية الموصى بها',
+          careTips: 'قص أطراف السيقان بزاوية 45 درجة، واستبدل الماء كل يومين.',
+          inStock: true,
+          featured
+        };
+
+        try {
+          await ApiClient.createProduct(newProd);
+        } catch (_) {}
+
+        cachedProducts.unshift(newProd);
+        saveProducts(cachedProducts);
+        renderProducts();
+        closeProductModal();
+        showToast('تمت إضافة الباقة الجديدة وحفظها في قاعدة البيانات! 🌹');
+      }
     });
   }
 
   // Reset defaults
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      if (confirm('هل ترغب بإعادة تعيين قائمة المنتجات إلى المنتجات الافتراضية؟')) {
+      if (confirm('هل ترغب بإعادة تعيين قائمة المنتجات إلى المنتجات الافتراضية لقاعدة البيانات؟')) {
         const resetList = resetDefaultProducts();
         cachedProducts = resetList;
         renderProducts();
