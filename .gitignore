@@ -1,0 +1,12 @@
+# Node modules
+node_modules/
+
+# Database files
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# Test outputs
+*.png
+test-hero.png
+test_shot.png

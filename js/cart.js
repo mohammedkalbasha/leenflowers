@@ -129,6 +129,9 @@ class CartStore {
       .join('\n');
 
     let msg = `🌸 *طلب جديد من متجر لين للزهور (Leen Flowers)* 🌸\n`;
+    if (details.orderNumber) {
+      msg += `🏷️ *رقم الطلب الرسمي:* ${details.orderNumber}\n`;
+    }
     msg += `─────────────────────────\n`;
     msg += `👤 *بيانات المشتري:*\n`;
     msg += `• الاسم: ${buyerName || 'غير محدد'}\n`;

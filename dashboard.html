@@ -3,12 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم لين للزهور | Leen Flowers Admin Dashboard</title>
+  <title>لوحة تحكم لين للزهور | Leen Flowers Admin Dashboard (Phase 2)</title>
   
   <link rel="stylesheet" href="css/themes.css">
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/print.css">
 </head>
 <body class="dashboard-page">
+
+  <!-- Dashboard Lock Screen (PIN Protection) -->
+  <div class="dashboard-lock-overlay active" id="dashboard-lock-overlay">
+    <div class="dashboard-lock-card">
+      <div class="lock-icon-badge">🌸</div>
+      <h2>لوحة تحكم لين للزهور</h2>
+      <p>منطقة الإدارة محمية - يرجى إدخال رمز المرور (PIN) للمتابعة</p>
+      
+      <form id="admin-pin-form" class="lock-form">
+        <div class="pin-input-group">
+          <input type="password" id="admin-pin-input" maxlength="8" placeholder="••••" required autofocus autocomplete="current-password">
+        </div>
+        <div class="lock-error-msg" id="lock-error-msg" style="display:none;"></div>
+        
+        <button type="submit" class="dash-btn-primary" style="width:100%; justify-content:center; padding:12px;">
+          <span>دخول لوحة التحكم</span> 🔓
+        </button>
+
+        <div style="margin-top:14px; font-size:0.82rem; color:var(--text-muted); text-align:center;">
+          <span>الرمز الافتراضي: <strong>1234</strong> (يمكن تغييره من الإعدادات)</span>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Dashboard Top Header -->
   <header class="dashboard-header">
@@ -18,7 +43,7 @@
           <div class="logo-icon">⚙️</div>
           <div class="logo-text">
             <h2>لوحة إدارة المتجر</h2>
-            <span>LEEN FLOWERS DASHBOARD (PHASE 2 READY)</span>
+            <span>LEEN FLOWERS DASHBOARD (PHASE 2 - SQLITE ACTIVE)</span>
           </div>
         </div>
 
@@ -29,6 +54,10 @@
             <button type="button" class="theme-btn" data-set-theme="lavender">🪻 لافندر</button>
             <button type="button" class="theme-btn" data-set-theme="midnight">🌙 دارك</button>
           </div>
+
+          <button type="button" class="dash-btn-outline" id="btn-admin-logout" title="تسجيل الخروج وقفل اللوحة">
+            <span>قفل اللوحة</span> 🔒
+          </button>
 
           <a href="index.html" class="btn-back-store">
             <span>العودة للمتجر</span> 🌸
@@ -61,7 +90,7 @@
       <div class="stat-card">
         <div class="stat-icon">💰</div>
         <div class="stat-info">
-          <h5>المبيعات التقديرية</h5>
+          <h5>المبيعات الفعلية</h5>
           <div class="stat-num" id="stat-total-revenue">0.00 د.أ</div>
         </div>
       </div>
@@ -78,48 +107,51 @@
     <!-- Store Settings & WhatsApp Configuration Card -->
     <div class="dashboard-card">
       <div class="dash-card-header">
-        <h3>⚙️ <span>إعدادات المتجر ورقم الواتساب للطلبات</span></h3>
-        <span class="status-badge in-stock">جاهز للربط بقاعدة البيانات</span>
+        <h3>⚙️ <span>إعدادات المتجر ورقم الواتساب وقاعدة البيانات</span></h3>
       </div>
+      
+      <form id="settings-form" class="dash-form-grid">
+        <div class="form-field">
+          <label for="cfg-store-name">اسم المتجر الرسمي</label>
+          <input type="text" id="cfg-store-name" required placeholder="لين للزهور - Leen Flowers">
+        </div>
 
-      <form id="settings-form">
-        <div class="config-grid">
-          <div class="form-field">
-            <label for="cfg-store-name">اسم المتجر</label>
-            <input type="text" id="cfg-store-name" required>
-          </div>
+        <div class="form-field">
+          <label for="cfg-whatsapp-phone">رقم هاتف / واتساب استقبال الطلبات</label>
+          <input type="text" id="cfg-whatsapp-phone" required placeholder="0797035039">
+          <small style="color:var(--text-muted); font-size:0.78rem;">الرقم المعتمد لإرسال تفاصيل السلة وطلبات الزبائن فورياً</small>
+        </div>
 
-          <div class="form-field">
-            <label for="cfg-whatsapp-phone">رقم الواتساب لاستقبال الطلبات (مبدئي أو مخصص) <span class="req">*</span></label>
-            <input type="tel" id="cfg-whatsapp-phone" required placeholder="0797035039">
-            <small style="color:var(--text-muted); font-size:0.75rem; margin-top:2px;">
-              * يمكنك تغيير الرقم هنا في أي وقت وسيتم توجيه جميع طلبات الزبائن مباشرة إليه!
-            </small>
-          </div>
+        <div class="form-field">
+          <label for="cfg-instagram-url">رابط حساب الإنستغرام</label>
+          <input type="url" id="cfg-instagram-url" placeholder="https://www.instagram.com/leen_flower11">
+        </div>
 
-          <div class="form-field">
-            <label for="cfg-instagram-url">رابط الإنستغرام</label>
-            <input type="url" id="cfg-instagram-url">
-          </div>
+        <div class="form-field">
+          <label for="cfg-facebook-url">رابط صفحة الفيسبوك</label>
+          <input type="url" id="cfg-facebook-url" placeholder="https://www.facebook.com/p/Leen-Flowers-100090007161366/">
+        </div>
 
-          <div class="form-field">
-            <label for="cfg-facebook-url">رابط الفيسبوك</label>
-            <input type="url" id="cfg-facebook-url">
+        <div class="form-field" style="grid-column: 1 / -1; border-top: 1px dashed var(--border-color, #eee); padding-top: 14px;">
+          <label for="cfg-change-pin">تغيير رمز المرور (PIN) للوحة التحكم</label>
+          <div style="display:flex; gap:10px; max-width:400px;">
+            <input type="password" id="cfg-new-pin" maxlength="8" placeholder="رمز جديد (4 أرقام على الأقل)">
+            <button type="button" class="dash-btn-outline" id="btn-save-new-pin">تحديث الرمز 🔑</button>
           </div>
         </div>
 
-        <div style="margin-top:20px; display:flex; gap:12px; justify-content:flex-end;">
+        <div style="grid-column: 1 / -1; display:flex; justify-content:flex-end;">
           <button type="submit" class="dash-btn-primary">
-            <span>حفظ الإعدادات</span> 💾
+            <span>حفظ الإعدادات في قاعدة البيانات</span> 💾
           </button>
         </div>
       </form>
     </div>
 
-    <!-- Products Catalog Management -->
+    <!-- Products Management Card -->
     <div class="dashboard-card">
       <div class="dash-card-header">
-        <h3>🌹 <span>إدارة باقات الزهور والمنتجات</span></h3>
+        <h3>🌹 <span>إدارة باقات الزهور والمنتجات (قاعدة البيانات الدائمة)</span></h3>
         <div class="dash-card-actions">
           <button type="button" class="dash-btn-outline" id="btn-reset-products">
             <span>استعادة الافتراضية</span> 🔄
@@ -149,13 +181,15 @@
       </div>
     </div>
 
-    <!-- Orders Log (Phase 2 Preview) -->
+    <!-- Orders Management Card (Phase 2 Live Database) -->
     <div class="dashboard-card">
       <div class="dash-card-header">
-        <h3>📋 <span>سجل الطلبات الواردة (تمهيد للمرحلة الثانية)</span></h3>
-        <button type="button" class="dash-btn-outline" id="btn-clear-orders">
-          <span>مسح السجل التجريبي</span> 🗑️
-        </button>
+        <h3>📋 <span>سجل الطلبات الحقيقية (المحفوظة تلقائياً في SQLite)</span></h3>
+        <div class="dash-card-actions">
+          <button type="button" class="dash-btn-outline" id="btn-refresh-orders">
+            <span>تحديث الطلبات</span> 🔄
+          </button>
+        </div>
       </div>
 
       <div class="table-responsive">
@@ -163,12 +197,13 @@
           <thead>
             <tr>
               <th>رقم الطلب</th>
-              <th>تاريخ الطلب</th>
-              <th>المشتري</th>
-              <th>المستلم والمدينة</th>
+              <th>تاريخ ووقت التوصيل</th>
+              <th>المشتري والمستلم</th>
+              <th>المدينة والعنوان</th>
               <th>المنتجات المطلوبة</th>
-              <th>المجموع الكلي</th>
-              <th>كرت الإهداء</th>
+              <th>المجموع</th>
+              <th>حالة الطلب</th>
+              <th>الإجراءات والطباعة</th>
             </tr>
           </thead>
           <tbody id="dashboard-orders-tbody">
@@ -234,10 +269,34 @@
     </div>
   </div>
 
+  <!-- Print Voucher Modal (Gift Card & Driver Slip) -->
+  <div class="checkout-modal-overlay" id="print-modal-overlay">
+    <div class="checkout-modal" style="max-width: 780px;">
+      <div class="checkout-modal-head no-print">
+        <h3>🖨️ <span>معاينة كرت الإهداء وإرسالية التوصيل للطباعة</span></h3>
+        <button type="button" class="btn-close-drawer" id="close-print-modal-btn">✕</button>
+      </div>
+
+      <div class="checkout-modal-body" style="padding: 24px;">
+        <!-- Printable Area Wrapper -->
+        <div id="printable-voucher">
+          <!-- Injected dynamically by dashboard.js -->
+        </div>
+
+        <div class="no-print" style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px; border-top:1px solid var(--border-color, #eee); padding-top:16px;">
+          <button type="button" class="dash-btn-outline" id="btn-cancel-print">إغلاق</button>
+          <button type="button" class="dash-btn-primary" id="btn-trigger-print" style="font-size:1.05rem; padding:10px 24px;">
+            <span>إرسال إلى الطابعة 🖨️</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div class="toast-notice" id="toast-notice"></div>
 
   <!-- Dashboard Script (Universal Native Bundle - Zero CORS) -->
-  <script src="js/dashboard-bundle.js"></script>
+  <script src="js/dashboard-bundle.js?v=2.2"></script>
 </body>
 </html>

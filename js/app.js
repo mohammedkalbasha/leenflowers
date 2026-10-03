@@ -609,7 +609,7 @@ function initCheckoutFlow() {
   }
 
   if (form) {
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
 
       if (CartManager.getItemCount() === 0) {
@@ -631,21 +631,55 @@ function initCheckoutFlow() {
         notes: document.getElementById('order-notes').value.trim()
       };
 
-      // Save order to history for the Dashboard
+      // 1. Create order in Database via ApiClient
+      let serverOrder = null;
+      try {
+        serverOrder = await ApiClient.createOrder({
+          buyerName: orderDetails.buyerName,
+          buyerPhone: orderDetails.buyerPhone,
+          recipientName: orderDetails.recipientName || orderDetails.buyerName,
+          recipientPhone: orderDetails.recipientPhone || orderDetails.buyerPhone,
+          city: orderDetails.city,
+          detailedAddress: orderDetails.address,
+          deliveryDate: orderDetails.deliveryDate,
+          deliveryTime: orderDetails.deliveryTime,
+          giftCardMessage: orderDetails.cardMessage,
+          giftCardSign: orderDetails.cardSign,
+          orderNotes: orderDetails.notes,
+          items: CartManager.getItems().map(item => ({
+            id: item.product.id,
+            title: item.product.title,
+            qty: item.quantity,
+            price: item.product.price
+          })),
+          subtotal: CartManager.getSubtotal(),
+          deliveryFee: 3.0,
+          total: CartManager.getSubtotal() + 3.0
+        });
+      } catch (err) {
+        console.warn('Could not save to API database, fallback to offline mode:', err.message);
+      }
+
+      if (serverOrder && serverOrder.orderNumber) {
+        orderDetails.orderNumber = serverOrder.orderNumber;
+      }
+
+      // 2. Save order to local history as backup
       saveOrderToLocalHistory(orderDetails, CartManager.getItems(), CartManager.getSubtotal());
 
-      // Generate WhatsApp Link
+      // 3. Generate WhatsApp Link with official order number
       const targetPhone = StoreConfig.defaultWhatsApp;
       const waUrl = CartManager.generateWhatsAppOrderUrl(orderDetails, targetPhone);
 
-      // Close modal and clear cart
+      // 4. Close modal and clear cart
       modalOverlay.classList.remove('active');
       form.reset();
       CartManager.clear();
 
-      showToast('جاري فتح الواتساب لإرسال الطلب... 💐');
+      const orderBadgeText = orderDetails.orderNumber ? ` رقم [${orderDetails.orderNumber}]` : '';
+      showToast(`تم تأكيد الطلب${orderBadgeText}! جاري فتح الواتساب... 💐`);
 
-      // Open WhatsApp in new tab/app
+      // 5. Open WhatsApp in new tab/app
       window.open(waUrl, '_blank');
     });
   }
