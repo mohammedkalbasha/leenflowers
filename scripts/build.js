@@ -11,6 +11,7 @@ function cleanModule(code) {
 }
 
 // Read modules
+const apiClientCode = cleanModule(fs.readFileSync('js/api-client.js', 'utf8'));
 const storeConfigCode = cleanModule(fs.readFileSync('js/store-config.js', 'utf8'));
 const productsDataCode = cleanModule(fs.readFileSync('js/products-data.js', 'utf8'));
 const socialFeedDataCode = cleanModule(fs.readFileSync('js/social-feed-data.js', 'utf8'));
@@ -27,6 +28,8 @@ const storefrontBundle = `
  */
 (function() {
   'use strict';
+
+  ${apiClientCode}
 
   ${storeConfigCode}
 
@@ -51,6 +54,8 @@ const dashboardBundle = `
  */
 (function() {
   'use strict';
+
+  ${apiClientCode}
 
   ${storeConfigCode}
 
