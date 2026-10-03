@@ -1,12 +1,49 @@
-# Node modules
+# Dependencies
 node_modules/
 
-# Database files
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# SQLite Database (Auto-generated & populated locally)
 data/*.db
 data/*.db-wal
 data/*.db-shm
+!data/.gitkeep
 
-# Test outputs
-*.png
+# Uploaded Media Files
+uploads/*
+!uploads/.gitkeep
+
+# Logs & Debugging
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary Test Files
 test-hero.png
 test_shot.png
+test_*.png
+test_checkout_ux.js
